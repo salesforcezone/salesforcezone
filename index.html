@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Salesforce Zone</title>
+<title>Salesforce Zone | Batch Apex Interview Prep</title>
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
   :root {
@@ -30,6 +30,8 @@
     --code-border: #1e3a6e;
     --shadow: 0 1px 3px rgba(0,0,0,0.06), 0 4px 16px rgba(0,82,204,0.07);
     --shadow-lg: 0 8px 32px rgba(0,82,204,0.12);
+    /* Parrot green for "Zone" */
+    --parrot-green: #32CD32;
   }
 
   * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -83,8 +85,10 @@
     color: var(--text);
     letter-spacing: -0.5px;
   }
-
-  .logo-name span { color: var(--accent); }
+  
+  /* Salesforce in default, Zone in parrot green */
+  .logo-name span.salesforce-text { color: var(--accent); }  /* keeping original blue if needed, but now Zone is green */
+  .logo-name span.zone-green { color: var(--parrot-green); }
 
   .header-tag {
     font-size: 11px;
@@ -313,6 +317,16 @@
     padding: 1px 6px;
     color: #dc2626;
   }
+  
+  /* For multi-line answers with better spacing */
+  .q-answer p {
+    margin-bottom: 12px;
+  }
+  .q-answer p br {
+    display: block;
+    content: "";
+    margin-bottom: 8px;
+  }
 
   /* ── CODE BLOCK ── */
   .code-wrap {
@@ -457,13 +471,12 @@
 <header>
   <div class="logo">
     <div class="logo-icon">SF</div>
-    <div class="logo-name">Salesforce<span>Zone</span></div>
+    <div class="logo-name">Salesforce<span class="zone-green">Zone</span></div>
   </div>
   <div class="header-tag">Interview Prep</div>
 </header>
 
 <div class="page">
-
   <div class="section-label">Topic</div>
   <div class="concept-row" id="conceptRow"></div>
 
@@ -488,7 +501,6 @@
   </div>
 
   <div class="progress-row" id="progressRow"></div>
-
   <div class="nav-row" style="margin-top:16px;">
     <button class="nav-btn" id="prevBtn" onclick="go(-1)">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M15 18l-6-6 6-6"/></svg>
@@ -499,12 +511,11 @@
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M9 18l6-6-6-6"/></svg>
     </button>
   </div>
-
 </div>
 
 <script>
 // ─────────────────────────────────────────────
-//  DATA
+//  DATA (Enhanced with formatted long answers)
 // ─────────────────────────────────────────────
 const DB = {
   "Batch Apex": {
@@ -537,230 +548,161 @@ const DB = {
 <span class="cls">MyBatchClass</span> myBatch = <span class="kw">new</span> <span class="cls">MyBatchClass</span>();
 Database.<span class="fn">executeBatch</span>(myBatch, <span class="num">200</span>);`
       },
-      {
-        q: "What interface must a Batch Apex class implement?",
-        a: "You must implement the <strong>Database.Batchable</strong> interface."
-      },
-      {
-        q: "Name the three methods in a Batch class.",
-        a: "<strong>start()</strong>, <strong>execute()</strong>, and <strong>finish()</strong>."
-      },
-      {
-        q: "What is the default batch size?",
-        a: "The default is <strong>200 records</strong>."
-      },
-      {
-        q: "What is the maximum batch size?",
-        a: "The maximum is <strong>2,000 records</strong>."
-      },
+      { q: "What interface must a Batch Apex class implement?", a: "You must implement the <strong>Database.Batchable</strong> interface." },
+      { q: "Name the three methods in a Batch class.", a: "<strong>start()</strong>, <strong>execute()</strong>, and <strong>finish()</strong>." },
+      { q: "What is the default batch size?", a: "The default is <strong>200 records</strong>." },
+      { q: "What is the maximum batch size?", a: "The maximum is <strong>2,000 records</strong>." },
+      { q: "What is the minimum batch size?", a: "The minimum is <strong>1 records</strong>." },
       {
         q: "Why use Batch Apex instead of a standard Trigger?",
-        a: "Triggers have much stricter governor limits (e.g., 50k SOQL records vs. 50 million in Batch)."
+        a: `Triggers have much stricter governor limits (e.g., 50k SOQL records vs. 50 million in Batch).<br><br>
+        <strong>1. Processing Volume (The 50 Million Factor)</strong><br>
+        Triggers: Can only handle up to 10,000 to 50,000 records effectively before hitting limits (like the SOQL limit of 50,000 records). If you try to update 200,000 records via a Trigger, it will likely fail.<br>
+        Batch Apex: Can process up to 50 million records using QueryLocator. It breaks these records into small chunks (default 200), so the system never gets overwhelmed.<br><br>
+        <strong>2. Higher Governor Limits</strong><br>
+        Since Batch Apex runs asynchronously (in the background), Salesforce gives it much more breathing room compared to the synchronous nature of Triggers:<br>
+        Heap Size: You get 12 MB in Batch (Async) vs. 6 MB in a Trigger (Sync).<br>
+        CPU Time: You get 60 seconds in Batch vs. 10 seconds in a Trigger.<br>
+        SOQL Queries: You get 200 queries in a Batch execute() block vs. 100 in a Trigger.`
       },
-      {
-        q: "Why use Batch Apex instead of Data Loader?",
-        a: "Use it for custom logic, run-time calculations, or complex transformations that cannot be handled by simple tools."
-      },
-      {
-        q: "What is the purpose of the finish() method?",
-        a: "It runs after all batches are processed and is typically used for post-processing like sending email notifications or chaining another job."
+      { q: "Why use Batch Apex instead of Data Loader?", a: "Use it for custom logic, run-time calculations, or complex transformations that cannot be handled by simple tools." },
+      { q: "What is the purpose of the finish() method?", a: "It runs after all batches are processed and is typically used for post-processing like sending email notifications or chaining another job.",
+        code: `<span class="kw">public class</span> <span class="cls">AccountCleanupBatch</span> <span class="kw">implements</span> Database.Batchable&lt;sObject&gt;, Database.Stateful {
+    
+    <span class="kw">public</span> Integer totalRecordsProcessed = <span class="num">0</span>;
+
+    <span class="kw">public</span> Database.QueryLocator <span class="fn">start</span>(Database.BatchableContext bc) {
+        <span class="kw">return</span> Database.<span class="fn">getQueryLocator</span>(<span class="str">'SELECT Id FROM Account WHERE Status__c = \'Obsolete\''</span>);
+    }
+
+    <span class="kw">public void</span> <span class="fn">execute</span>(Database.BatchableContext bc, List&lt;Account&gt; scope) {
+        totalRecordsProcessed += scope.<span class="fn">size</span>();
+        <span class="fn">delete</span> scope;
+    }
+
+    <span class="kw">public void</span> <span class="fn">finish</span>(Database.BatchableContext bc) {
+        Messaging.SingleEmailMessage mail = <span class="kw">new</span> Messaging.SingleEmailMessage();
+        mail.<span class="fn">setToAddresses</span>(<span class="kw">new</span> String[] {<span class="str">'admin@example.com'</span>});
+        mail.<span class="fn">setSubject</span>(<span class="str">'Batch Process Completed: Account Cleanup'</span>);
+        mail.<span class="fn">setPlainTextBody</span>(<span class="str">'The batch job is finished. Total records deleted: '</span> + totalRecordsProcessed);
+        Messaging.<span class="fn">sendEmail</span>(<span class="kw">new</span> Messaging.SingleEmailMessage[] { mail });
+        Database.<span class="fn">executeBatch</span>(<span class="kw">new</span> <span class="cls">UpdateContactsBatch</span>(), <span class="num">200</span>);
+    }
+}`
       },
       {
         q: "What return types are allowed in the start() method?",
-        a: "It must return either a <strong>Database.QueryLocator</strong> or an <strong>Iterable</strong>."
+        a: `It must return either a <strong>Database.QueryLocator</strong> or an <strong>Iterable</strong>.<br><br>
+        <strong>1. Database.QueryLocator (Most Common)</strong><br>
+        Use this when you are fetching records using a standard SOQL query. It can handle up to 50 million records.<br>
+        <strong>2. Iterable (Custom Data)</strong><br>
+        Use this when data isn't a simple list of SObjects (e.g., processing external API results). Limit: 50,000 records.`,
+        code: `<span class="kw">public class</span> <span class="cls">MultiObjectBatch</span> <span class="kw">implements</span> Database.Batchable&lt;sObject&gt; {
+    <span class="kw">public</span> Iterable&lt;sObject&gt; <span class="fn">start</span>(Database.BatchableContext bc) {
+        List&lt;sObject&gt; combinedList = <span class="kw">new</span> List&lt;sObject&gt;();
+        combinedList.<span class="fn">addAll</span>((List&lt;sObject&gt;)[SELECT Id, Name FROM Account LIMIT <span class="num">1000</span>]);
+        combinedList.<span class="fn">addAll</span>((List&lt;sObject&gt;)[SELECT Id, LastName FROM Contact LIMIT <span class="num">1000</span>]);
+        <span class="kw">return</span> combinedList;
+    }
+    <span class="kw">public void</span> <span class="fn">execute</span>(Database.BatchableContext bc, List&lt;sObject&gt; scope) {
+        <span class="kw">for</span> (sObject obj : scope) {
+            <span class="kw">if</span> (obj <span class="kw">instanceof</span> Account) { <span class="cmt">// handle Account</span> }
+        }
+    }
+    <span class="kw">public void</span> <span class="fn">finish</span>(Database.BatchableContext bc) { }
+}`
       },
-      {
-        q: "How do you invoke a batch class?",
-        a: "By using <strong>Database.executeBatch(new MyBatchClass(), batchSize);</strong>",
-        code: `Database.<span class="fn">executeBatch</span>(<span class="kw">new</span> <span class="cls">MyBatchClass</span>(), <span class="num">200</span>);`
-      },
-      {
-        q: "What information does Database.BatchableContext provide?",
-        a: "It contains the <strong>Job ID</strong>, which allows you to track the progress of the batch."
-      }
+      { q: "How do you invoke a batch class?", a: "By using <strong>Database.executeBatch(new MyBatchClass(), batchSize);</strong>",
+        code: `Database.<span class="fn">executeBatch</span>(<span class="kw">new</span> <span class="cls">MyBatchClass</span>(), <span class="num">200</span>);` },
+      { q: "What information does Database.BatchableContext provide?", a: "It contains the <strong>Job ID</strong>, which allows you to track the progress of the batch." }
     ],
     intermediate: [
-      {
-        q: "QueryLocator vs. Iterable — When to use which?",
-        a: "Use <strong>QueryLocator</strong> for standard SOQL queries (up to 50M records). Use <strong>Iterable</strong> for complex logic or non-SObject data."
-      },
-      {
-        q: "Is Batch Apex stateful by default?",
-        a: "No, it is <strong>stateless</strong>. Member variables reset for every execute transaction."
-      },
-      {
-        q: "How do you maintain state across batches?",
-        a: "Implement the <strong>Database.Stateful</strong> interface so member variables persist across all execute() chunks.",
+      { q: "QueryLocator vs. Iterable — When to use which?", a: "Use <strong>QueryLocator</strong> for standard SOQL queries (up to 50M records). Use <strong>Iterable</strong> for complex logic or non-SObject data." },
+      { q: "Is Batch Apex stateful by default?", a: "No, it is <strong>stateless</strong>. Member variables reset for every execute transaction." },
+      { q: "How do you maintain state across batches?", a: "Implement the <strong>Database.Stateful</strong> interface so member variables persist across all execute() chunks.",
         code: `<span class="kw">public class</span> <span class="cls">LeadUpdateBatch</span> <span class="kw">implements</span> Database.Batchable&lt;sObject&gt;, Database.Stateful {
-
     <span class="kw">public</span> Integer successCount = <span class="num">0</span>;
     <span class="kw">public</span> Integer failureCount = <span class="num">0</span>;
-
-    <span class="kw">public</span> Database.QueryLocator <span class="fn">start</span>(Database.BatchableContext BC) {
-        <span class="kw">return</span> Database.<span class="fn">getQueryLocator</span>(<span class="str">'SELECT Id FROM Lead'</span>);
+    <span class="cmt">// ... execute tracks counts across all chunks</span>
+}` },
+      { q: "How can you perform callouts from Batch Apex?",
+        a: `You must implement the <strong>Database.AllowsCallouts</strong> interface on your batch class.<br><br>
+        <strong>Callout Limits:</strong> You are limited to 100 callouts per transaction (one execute block). If batch size is 200, use batch size ≤ 100.<br>
+        <strong>Maximum Timeout:</strong> Callouts must complete within 120-second timeout limit.`,
+        code: `<span class="kw">public class</span> <span class="cls">AccountSyncBatch</span> <span class="kw">implements</span> Database.Batchable&lt;sObject&gt;, Database.AllowsCallouts {
+    <span class="kw">public void</span> <span class="fn">execute</span>(Database.BatchableContext bc, List&lt;Account&gt; scope) {
+        Http http = <span class="kw">new</span> Http();
+        HttpRequest req = <span class="kw">new</span> HttpRequest();
+        req.<span class="fn">setEndpoint</span>(<span class="str">'https://external-system.com'</span>);
+        req.<span class="fn">setMethod</span>(<span class="str">'POST'</span>);
+        HttpResponse res = http.<span class="fn">send</span>(req);
     }
-
-    <span class="kw">public void</span> <span class="fn">execute</span>(Database.BatchableContext BC, List&lt;Lead&gt; scope) {
-        Database.SaveResult[] results = Database.<span class="fn">update</span>(scope, <span class="kw">false</span>);
-        <span class="kw">for</span> (Database.SaveResult sr : results) {
-            <span class="kw">if</span> (sr.<span class="fn">isSuccess</span>()) { successCount++; }
-            <span class="kw">else</span> { failureCount++; }
-        }
-    }
-
-    <span class="kw">public void</span> <span class="fn">finish</span>(Database.BatchableContext BC) {
-        System.<span class="fn">debug</span>(<span class="str">'Successes: '</span> + successCount);
-        System.<span class="fn">debug</span>(<span class="str">'Failures: '</span>  + failureCount);
-    }
-}`
-      },
-      {
-        q: "How can you perform callouts from Batch Apex?",
-        a: "You must implement the <strong>Database.AllowsCallouts</strong> interface on your batch class."
-      },
-      {
-        q: "What is the Apex Flex Queue?",
-        a: "A queue that holds up to <strong>100 batch jobs</strong> in a Holding status before they move to Queued status."
-      },
-      {
-        q: "Can you change the order of jobs in the Flex Queue?",
-        a: "Yes, using <strong>System.FlexQueue.moveBeforeJob()</strong> or <strong>moveAfterJob()</strong>."
-      },
-      {
-        q: "How many batch jobs can run concurrently?",
-        a: "Salesforce allows a maximum of <strong>5 active</strong> (running or queued) batch jobs at once."
-      },
-      {
-        q: "Can you call a future method from Batch Apex?",
-        a: "No. Calling a <strong>@future</strong> method from a batch job will throw: <em>System.AsyncException: Future method cannot be called from a future or batch method</em>"
-      },
-      {
-        q: "Can you call a Queueable job from Batch Apex?",
-        a: "Yes, you can call <strong>one System.enqueueJob()</strong> per execute() or finish() method."
-      },
-      {
-        q: "Can you call one Batch Apex from another?",
-        a: "Yes, but <strong>only from the finish() method</strong>. Calling from start() or execute() throws: <em>System.AsyncException: Database.executeBatch cannot be called from a batch start, batch execute, or future method</em>"
-      },
-      {
-        q: "How do you stop a running batch job?",
-        a: "Use <strong>System.abortJob(jobId);</strong>",
-        code: `System.<span class="fn">abortJob</span>(jobId);`
-      },
-      {
-        q: "What is the maximum number of batch executions per 24 hours?",
-        a: "<strong>250,000</strong> or the number of user licenses multiplied by 200, whichever is greater."
-      },
-      {
-        q: "How many start() methods can run concurrently?",
-        a: "Only <strong>one at a time</strong> across all active batch jobs."
-      },
-      {
-        q: "Can you use FOR UPDATE in a Batch SOQL query?",
-        a: "No. Locking is <strong>automatically handled</strong> by Salesforce for each batch transaction."
-      },
-      {
-        q: "How do you track the status of a batch job?",
-        a: "Query the <strong>AsyncApexJob</strong> object using the Job ID returned when the batch was invoked.",
-        code: `AsyncApexJob job = [
-    SELECT Id, Status, JobItemsProcessed, TotalJobItems, NumberOfErrors
-    FROM AsyncApexJob
-    WHERE Id = :batchJobId
-];`
-      }
+}` },
+      { q: "What is the Apex Flex Queue?", a: "A queue that holds up to <strong>100 batch jobs</strong> in a Holding status before they move to Queued status." },
+      { q: "Can you change the order of jobs in the Flex Queue?",
+        a: `Yes, using <strong>System.FlexQueue.moveBeforeJob()</strong> or <strong>moveAfterJob()</strong>.<br><br>
+        In real-world scenario, reorder manually via Setup > Jobs > Apex Flex Queue in Salesforce UI.`,
+        code: `Id urgentJobId = [SELECT Id FROM AsyncApexJob WHERE JobType = 'BatchApex' AND Status = 'Holding' LIMIT 1].Id;
+Id firstJobId = [SELECT Id FROM AsyncApexJob WHERE JobType = 'BatchApex' AND Status = 'Holding' ORDER BY CreatedDate ASC LIMIT 1].Id;
+Boolean isMoved = System.FlexQueue.<span class="fn">moveBeforeJob</span>(urgentJobId, firstJobId);` },
+      { q: "How many batch jobs can run concurrently?", a: "Salesforce allows a maximum of <strong>5 active</strong> (running or queued) batch jobs at once." },
+      { q: "Can you call a future method from Batch Apex?", a: "No. Calling a <strong>@future</strong> method from a batch job will throw: <em>System.AsyncException: Future method cannot be called from a future or batch method</em>" },
+      { q: "Can you call a Queueable job from Batch Apex?",
+        a: `Yes, you can call <strong>one System.enqueueJob()</strong> per execute() or finish() method.<br><br>
+        <strong>Critical:</strong> Cannot enqueue two Queueable jobs in same execute() — throws LimitException. Batch size 200 → one Queueable job per chunk.`,
+        code: `System.<span class="fn">enqueueJob</span>(<span class="kw">new</span> <span class="cls">MyQueueableJob</span>(scope));` },
+      { q: "Can you call one Batch Apex from another?", a: "Yes, but <strong>only from the finish() method</strong>. Calling from start() or execute() throws: <em>System.AsyncException: Database.executeBatch cannot be called from a batch start, batch execute, or future method</em>" },
+      { q: "How do you stop a running batch job?", a: "Use <strong>System.abortJob(jobId);</strong>", code: `System.<span class="fn">abortJob</span>(jobId);` },
+      { q: "What is the maximum number of batch executions per 24 hours?", a: "<strong>250,000</strong> or the number of user licenses multiplied by 200, whichever is greater." },
+      { q: "How many start() methods can run concurrently?", a: "Only <strong>one at a time</strong> across all active batch jobs." },
+      { q: "Can you use FOR UPDATE in a Batch SOQL query?", a: "No. Locking is <strong>automatically handled</strong> by Salesforce for each batch transaction." },
+      { q: "How do you track the status of a batch job?", a: "Query the <strong>AsyncApexJob</strong> object using the Job ID returned when the batch was invoked.",
+        code: `AsyncApexJob job = [SELECT Id, Status, JobItemsProcessed, TotalJobItems, NumberOfErrors FROM AsyncApexJob WHERE Id = :batchJobId];` }
     ],
     advanced: [
-      {
-        q: "If a record fails in a batch of 200, what happens by default?",
-        a: "The <strong>entire batch of 200 records rolls back</strong>, but other batch chunks continue to process normally."
-      },
-      {
-        q: "How do you ensure only the failing record is rolled back, not the whole chunk?",
-        a: "Use <strong>Database.insert(records, false)</strong> — the allOrNone parameter set to false enables partial success.",
+      { q: "If a record fails in a batch of 200, what happens by default?", a: "The <strong>entire batch of 200 records rolls back</strong>, but other batch chunks continue to process normally." },
+      { q: "How do you ensure only the failing record is rolled back, not the whole chunk?",
+        a: `Use <strong>Database.insert(records, false)</strong> — the allOrNone parameter set to false enables partial success.<br><br>
+        <strong>What is allOrNone?</strong><br>
+        true (Default): "All or Nothing." If even one record fails, entire chunk rolls back.<br>
+        false: Allows Partial Success. Saves good records, only bad records roll back.`,
         code: `Database.SaveResult[] results = Database.<span class="fn">insert</span>(records, <span class="kw">false</span>);
-
 <span class="kw">for</span> (Database.SaveResult sr : results) {
-    <span class="kw">if</span> (!sr.<span class="fn">isSuccess</span>()) {
-        <span class="kw">for</span> (Database.Error err : sr.<span class="fn">getErrors</span>()) {
-            System.<span class="fn">debug</span>(<span class="str">'Error: '</span> + err.<span class="fn">getMessage</span>());
+    <span class="kw">if</span> (!sr.<span class="fn">isSuccess</span>()) { System.<span class="fn">debug</span>(sr.<span class="fn">getErrors</span>()[0].<span class="fn">getMessage</span>()); }
+}` },
+      { q: "What is the QueryLocator record limit?", a: "Up to <strong>50 million records</strong> can be retrieved, far beyond SOQL's normal 50,000 limit." },
+      { q: "What happens to Batch jobs during Salesforce maintenance?", a: "Jobs are <strong>held automatically</strong> and resumed once the service is back online — no manual intervention needed." },
+      { q: "How do you track success and failure counts across all batches?", a: "Implement <strong>Database.Stateful</strong> to maintain counter variables, then report the totals in finish()." },
+      { q: "When should you choose Queueable over Batch Apex?", a: "Use <strong>Queueable</strong> for smaller, chained, or single-context tasks. Use <strong>Batch</strong> when processing large volumes of records (millions)." },
+      { q: "What happens if an unhandled exception occurs in execute()?",
+        a: `The <strong>entire chunk rolls back</strong> and the error is logged in the <strong>AsyncApexJob</strong> record's NumberOfErrors field.<br><br>
+        Salesforce does not stop the entire batch job — only that specific chunk fails. The finish() method still executes at the end.` },
+      { q: "How do you handle a Mixed DML error in a batch?",
+        a: `Use a <strong>@future method</strong> or separate DML into distinct transactions — Setup objects (like User) and non-Setup objects cannot be mixed in the same DML context.<br><br>
+        <strong>Important:</strong> You can only call 50 @future methods per transaction. Always pass a collection of IDs.`,
+        code: `<span class="kw">public void</span> <span class="fn">execute</span>(Database.BatchableContext bc, List&lt;Account&gt; scope) {
+    <span class="fn">update</span> scope;
+    <span class="fn">updateUserRecords</span>(<span class="kw">new</span> Set&lt;Id&gt;(<span class="kw">new</span> Map&lt;Id, Account&gt;(scope).<span class="fn">keySet</span>()));
+}
+@future
+<span class="kw">public static void</span> <span class="fn">updateUserRecords</span>(Set&lt;Id&gt; userIds) {
+    <span class="fn">update</span> [SELECT Id FROM User WHERE Id IN :userIds];
+}` },
+      { q: "How do you send a summary email of success and failure from a batch?",
+        a: `Use <strong>Database.Stateful</strong> to collect success/failure counts across all chunks, then send an email using <strong>Messaging.sendEmail()</strong> inside finish().`,
+        code: `<span class="kw">public class</span> <span class="cls">AccountUpdateBatch</span> <span class="kw">implements</span> Database.Batchable&lt;sObject&gt;, Database.Stateful {
+    <span class="kw">public</span> Integer successCount = <span class="num">0</span>;
+    <span class="kw">public</span> Integer failureCount = <span class="num">0</span>;
+    <span class="kw">public</span> String errorLog = <span class="str">''</span>;
+    <span class="kw">public void</span> <span class="fn">execute</span>(Database.BatchableContext bc, List&lt;Account&gt; scope) {
+        Database.SaveResult[] results = Database.<span class="fn">update</span>(scope, <span class="kw">false</span>);
+        <span class="kw">for</span> (Database.SaveResult sr : results) {
+            <span class="kw">if</span> (sr.<span class="fn">isSuccess</span>()) successCount++;
+            <span class="kw">else</span> { failureCount++; errorLog += sr.<span class="fn">getErrors</span>()[0].<span class="fn">getMessage</span>() + <span class="str">'\\n'</span>; }
         }
     }
+    <span class="kw">public void</span> <span class="fn">finish</span>(Database.BatchableContext bc) { <span class="cmt">/* Messaging.sendEmail */</span> }
 }`
-      },
-      {
-        q: "Can you invoke a Batch class from a Trigger?",
-        a: "Yes, but it is <strong>risky</strong> due to the 5 concurrent job limit. A trigger can fire many times and quickly exceed the limit."
-      },
-      {
-        q: "How do you test Batch Apex?",
-        a: "Enclose execution between <strong>Test.startTest()</strong> and <strong>Test.stopTest()</strong>. All async code runs synchronously after stopTest().",
-        code: `@isTest
-<span class="kw">static void</span> <span class="fn">testBatch</span>() {
-    <span class="cmt">// Insert test data first</span>
-    List&lt;Account&gt; accounts = <span class="kw">new</span> List&lt;Account&gt;();
-    <span class="kw">for</span> (Integer i = <span class="num">0</span>; i &lt; <span class="num">10</span>; i++) {
-        accounts.add(<span class="kw">new</span> <span class="cls">Account</span>(Name = <span class="str">'Test '</span> + i));
-    }
-    <span class="fn">insert</span> accounts;
-
-    Test.<span class="fn">startTest</span>();
-    Database.<span class="fn">executeBatch</span>(<span class="kw">new</span> <span class="cls">MyBatchClass</span>());
-    Test.<span class="fn">stopTest</span>(); <span class="cmt">// Batch runs synchronously here</span>
-
-    <span class="cmt">// Assert results</span>
-}`
-      },
-      {
-        q: "What is the maximum records you can process in a test?",
-        a: "Typically limited to <strong>one batch chunk (~200 records)</strong> to keep it in a single transaction within test limits."
-      },
-      {
-        q: "What is the QueryLocator record limit?",
-        a: "Up to <strong>50 million records</strong> can be retrieved, far beyond SOQL's normal 50,000 limit."
-      },
-      {
-        q: "What happens to Batch jobs during Salesforce maintenance?",
-        a: "Jobs are <strong>held automatically</strong> and resumed once the service is back online — no manual intervention needed."
-      },
-      {
-        q: "How do you track success and failure counts across all batches?",
-        a: "Implement <strong>Database.Stateful</strong> to maintain counter variables, then report the totals in finish()."
-      },
-      {
-        q: "Why can you not use FOR UPDATE in Batch SOQL?",
-        a: "Salesforce <strong>automatically handles record locking</strong> for the batch scope to prevent deadlocks across chunks."
-      },
-      {
-        q: "When should you choose Queueable over Batch Apex?",
-        a: "Use <strong>Queueable</strong> for smaller, chained, or single-context tasks. Use <strong>Batch</strong> when processing large volumes of records (millions)."
-      },
-      {
-        q: "What happens if an unhandled exception occurs in execute()?",
-        a: "The <strong>entire chunk rolls back</strong> and the error is logged in the <strong>AsyncApexJob</strong> record's NumberOfErrors field."
-      },
-      {
-        q: "How do you handle a Mixed DML error in a batch?",
-        a: "Use a <strong>@future method</strong> or separate the DML into distinct transactions — Setup objects (like User) and non-Setup objects cannot be mixed in the same DML context."
-      },
-      {
-        q: "How do you send a summary email of success and failure from a batch?",
-        a: "Use <strong>Database.Stateful</strong> to collect success/failure counts across all chunks, then send an email using <strong>Messaging.sendEmail()</strong> inside finish()."
-      },
-      {
-        q: "How would you design a batch that can restart from a failure point?",
-        a: "Track processed record IDs in a <strong>Database.Stateful</strong> Set, and filter them out in the start() SOQL query so already-processed records are skipped on re-run."
-      },
-      {
-        q: "Can we have duplicate start(), execute(), or finish() methods?",
-        a: "No. You <strong>cannot have duplicate methods</strong> in a single Batch Apex class — it will cause a compile error."
-      },
-      {
-        q: "Can we have additional methods apart from the three required methods?",
-        a: "Yes. You can add <strong>helper methods</strong> freely alongside start(), execute(), and finish()."
-      },
-      {
-        q: "What happens if we do not write a finish() method?",
-        a: "It is <strong>mandatory</strong>. The class will not compile and throws: <em>Class MyBatchClass must implement the method: void Database.Batchable&lt;SObject&gt;.finish(Database.BatchableContext)</em>"
       }
     ]
   }
@@ -774,17 +716,11 @@ let category = 'basic';
 let idx      = 0;
 let visited  = {};
 
-// ─────────────────────────────────────────────
-//  BOOT
-// ─────────────────────────────────────────────
 function boot() {
   renderConcepts();
   selectCat('basic');
 }
 
-// ─────────────────────────────────────────────
-//  CONCEPTS
-// ─────────────────────────────────────────────
 function renderConcepts() {
   const row = document.getElementById('conceptRow');
   row.innerHTML = '';
@@ -804,9 +740,6 @@ function renderConcepts() {
   });
 }
 
-// ─────────────────────────────────────────────
-//  CATEGORIES
-// ─────────────────────────────────────────────
 function selectCat(cat) {
   category = cat;
   idx = 0;
@@ -824,16 +757,11 @@ function updateCounts() {
   document.getElementById('cnt-advanced').textContent     = (d.advanced      || []).length;
 }
 
-// ─────────────────────────────────────────────
-//  RENDER QUESTION
-// ─────────────────────────────────────────────
 function renderQ() {
   var qs   = ((DB[concept] || {})[category]) || [];
   var body = document.getElementById('qBody');
   var stripe = document.getElementById('qStripe');
-
   stripe.className = 'q-stripe ' + category;
-
   if (qs.length === 0) {
     body.innerHTML = '<div class="empty"><div class="e-icon">📭</div><p>No questions in this category yet.</p></div>';
     document.getElementById('progressRow').innerHTML = '';
@@ -841,32 +769,13 @@ function renderQ() {
     document.getElementById('nextBtn').disabled  = true;
     return;
   }
-
   if (idx >= qs.length) idx = qs.length - 1;
   if (idx < 0) idx = 0;
-
   var q   = qs[idx];
   var key = concept + '-' + category + '-' + idx;
   visited[key] = true;
-
   var catLabel = category.charAt(0).toUpperCase() + category.slice(1);
-
-  var codeHtml = '';
-  if (q.code) {
-    codeHtml =
-      '<div class="code-wrap">' +
-        '<div class="code-header">' +
-          '<div class="code-dots">' +
-            '<div class="code-dot"></div>' +
-            '<div class="code-dot"></div>' +
-            '<div class="code-dot"></div>' +
-          '</div>' +
-          '<span class="code-lang">APEX</span>' +
-        '</div>' +
-        '<pre class="code-block">' + q.code + '</pre>' +
-      '</div>';
-  }
-
+  var codeHtml = q.code ? '<div class="code-wrap"><div class="code-header"><div class="code-dots"><div class="code-dot"></div><div class="code-dot"></div><div class="code-dot"></div></div><span class="code-lang">APEX</span></div><pre class="code-block">' + q.code + '</pre></div>' : '';
   body.innerHTML =
     '<div class="q-meta">' +
       '<span class="q-num">Q' + (idx + 1) + ' of ' + qs.length + ' &nbsp;·&nbsp; ' + concept + '</span>' +
@@ -876,8 +785,6 @@ function renderQ() {
     '<div class="q-divider"></div>' +
     '<div class="q-answer-label">Answer</div>' +
     '<div class="q-answer"><p>' + q.a + '</p>' + codeHtml + '</div>';
-
-  // Progress dots
   var pr = document.getElementById('progressRow');
   pr.innerHTML = '';
   qs.forEach(function(_, i) {
@@ -887,7 +794,6 @@ function renderQ() {
     (function(i2){ d.onclick = function() { idx = i2; renderQ(); }; })(i);
     pr.appendChild(d);
   });
-
   document.getElementById('prevBtn').disabled = (idx === 0);
   document.getElementById('nextBtn').disabled  = (idx === qs.length - 1);
 }
@@ -897,7 +803,6 @@ function go(dir) {
   idx = Math.max(0, Math.min(qs.length - 1, idx + dir));
   renderQ();
 }
-
 boot();
 </script>
 </body>
