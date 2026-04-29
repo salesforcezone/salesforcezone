@@ -282,6 +282,16 @@
   .cat-tab[data-cat="advanced"].active .cat-label { color: var(--adv); }
   .cat-tab[data-cat="advanced"].active .cat-count { background: var(--adv-border); color: var(--adv); }
 
+  .cat-tab[data-cat="scenario"].active { border-color: #7c3aed; background: #f3f0ff; }
+.cat-tab[data-cat="scenario"].active .cat-label { color: #7c3aed; }
+.cat-tab[data-cat="scenario"].active .cat-count { background: #ddd6fe; color: #7c3aed; }
+
+.q-stripe.scenario { background: linear-gradient(90deg, #7c3aed, #a78bfa); }
+
+/* And scenario badge styling */
+.q-badge.scenario { background: #f3f0ff; color: #7c3aed; border: 1px solid #ddd6fe; }
+
+
   .nav-top-row {
     display: flex; align-items: center;
     justify-content: space-between;
@@ -562,6 +572,10 @@
       <span class="cat-label">Advanced</span>
       <span class="cat-count" id="cnt-advanced">0</span>
     </div>
+     <div class="cat-tab" data-cat="scenario" onclick="selectCat('scenario')">
+    <span class="cat-label">Scenario</span>
+    <span class="cat-count" id="cnt-scenario">0</span>
+  </div>
   </div>
 
   <div class="nav-top-row">
@@ -1403,6 +1417,1641 @@ System.<span class="fn">debug</span>(<span class="str">'Future: '</span>     + L
 }` }
     ],
     _summary: true
+  },
+   "LWC Fundamentals": {
+    basic: [
+      {
+        q: "What is LWC (Lightning Web Components)?",
+        a: "LWC is a modern UI framework built on the 2019 Web Components standards. It uses native browser features like <strong>Custom Elements</strong> and <strong>Shadow DOM</strong>, making it highly efficient compared to older frameworks that rely on heavy wrappers.",
+        code: `<span class="cmt">&lt;!-- helloWorld.html --&gt;</span>
+<span class="tag">&lt;template&gt;</span>
+    <span class="tag">&lt;div&gt;</span>Hello, this is a native LWC component!<span class="tag">&lt;/div&gt;</span>
+<span class="tag">&lt;/template&gt;</span>`
+      },
+      {
+        q: "Explain the LWC framework.",
+        a: "The LWC framework is a lightweight layer of specialized Salesforce services (like <strong>Security</strong>, <strong>Wire Service</strong>, and <strong>Base Components</strong>) built on top of a Standard Web Stack.",
+        code: `<span class="cmt">// exampleComponent.js</span>
+<span class="kw">import</span> { LightningElement } <span class="kw">from</span> <span class="str">'lwc'</span>;
+
+<span class="kw">export default class</span> <span class="cls">ExampleComponent</span> <span class="kw">extends</span> <span class="cls">LightningElement</span> {
+    <span class="cmt">// LWC framework adds security and reactivity automatically</span>
+    greeting = <span class="str">'Hello from LWC'</span>;
+}`
+      },
+      {
+        q: "What are the advantages of using LWC?",
+        a: "<strong>Speed</strong> — leverages native browser features for fast rendering.<br><strong>Standard Scripting</strong> — uses modern ES6+ JavaScript (arrow functions, classes, modules).<br><strong>Lightweight</strong> — minimal framework overhead compared to Aura.<br><strong>Security</strong> — Shadow DOM provides built-in CSS and DOM encapsulation.",
+        code: `<span class="kw">import</span> { LightningElement } <span class="kw">from</span> <span class="str">'lwc'</span>;
+
+<span class="kw">export default class</span> <span class="cls">AdvantagesDemo</span> <span class="kw">extends</span> <span class="cls">LightningElement</span> {
+    <span class="cmt">// Arrow function (Standard Scripting)</span>
+    handleClick = () => {
+        console.<span class="fn">log</span>(<span class="str">'Fast and modern!'</span>);
+    }
+
+    <span class="cmt">// Template literal</span>
+    <span class="fn">get</span> message() {
+        <span class="kw">return</span> <span class="str">\`LWC is \${this.speed}\`</span>;
+    }
+}`
+      },
+      {
+        q: "Why did Salesforce introduce LWC when Aura already existed?",
+        a: "Aura was created in 2014 when web standards were immature. By 2019, browsers evolved to handle these natively, so Salesforce introduced LWC to leverage native web standards — resulting in faster, lighter, more maintainable components.",
+        code: `<span class="cmt">// LWC uses native Custom Elements</span>
+<span class="cmt">// No complex framework wrapper needed</span>
+<span class="kw">class</span> <span class="cls">NativeComponent</span> <span class="kw">extends</span> <span class="cls">HTMLElement</span> {
+    <span class="fn">connectedCallback</span>() {
+        <span class="kw">this</span>.innerHTML = <span class="str">'&lt;div&gt;Native Web Component&lt;/div&gt;'</span>;
+    }
+}`
+      },
+      {
+        q: "How many ways can we create Lightning Components?",
+        a: "Two models: the <strong>Aura Component model</strong> (.cmp files) and the <strong>Lightning Web Component (LWC) model</strong> (.html files). Both can coexist in the same org.",
+        code: `<span class="cmt">&lt;!-- Aura Component (.cmp) --&gt;</span>
+<span class="tag">&lt;aura:component&gt;</span>
+    <span class="tag">&lt;div&gt;</span>I am Aura<span class="tag">&lt;/div&gt;</span>
+<span class="tag">&lt;/aura:component&gt;</span>
+
+<span class="cmt">&lt;!-- LWC Component (.html) --&gt;</span>
+<span class="tag">&lt;template&gt;</span>
+    <span class="tag">&lt;div&gt;</span>I am LWC<span class="tag">&lt;/div&gt;</span>
+<span class="tag">&lt;/template&gt;</span>`
+      },
+      {
+        q: "Can Aura and LWC coexist?",
+        a: "Yes. They can coexist on the same page and communicate. An <strong>Aura component can host an LWC</strong> (embed it in .cmp), but an <strong>LWC cannot host an Aura component</strong>. LWC is the recommended approach for new development.",
+        code: `<span class="cmt">&lt;!-- Aura Component hosting LWC --&gt;</span>
+<span class="tag">&lt;aura:component&gt;</span>
+    <span class="tag">&lt;c:myLwcComponent&gt;&lt;/c:myLwcComponent&gt;</span>
+<span class="tag">&lt;/aura:component&gt;</span>`
+      },
+      {
+        q: "Can we create LWC in Developer Console?",
+        a: "No. LWC must be developed using <strong>Visual Studio Code</strong> with the Salesforce Extension Pack, or via the Salesforce CLI. The Developer Console only supports Aura components.",
+        code: `<span class="cmt"># Create LWC via Salesforce CLI</span>
+sfdx force:lightning:component:create --type lwc --componentname MyComponent`
+      },
+      {
+        q: "Explain the LWC component bundle.",
+        a: "A component bundle is a folder containing: <strong>HTML</strong> (template), <strong>JavaScript</strong> (controller/logic), <strong>Configuration XML</strong> (meta.xml), and optional <strong>CSS</strong>. All files must share the same name as the folder.",
+        code: `<span class="cmt">// Folder structure</span>
+myComponent/
+├── myComponent.html       <span class="cmt">// Template</span>
+├── myComponent.js         <span class="cmt">// Logic</span>
+├── myComponent.js-meta.xml <span class="cmt">// Config</span>
+└── myComponent.css        <span class="cmt">// Styles (optional)</span>
+
+<span class="cmt">// myComponent.html</span>
+<span class="tag">&lt;template&gt;</span>
+    <span class="tag">&lt;div</span> <span class="attr">class</span>=<span class="str">"container"</span><span class="tag">&gt;</span>{message}<span class="tag">&lt;/div&gt;</span>
+<span class="tag">&lt;/template&gt;</span>
+
+<span class="cmt">// myComponent.js</span>
+<span class="kw">import</span> { LightningElement } <span class="kw">from</span> <span class="str">'lwc'</span>;
+<span class="kw">export default class</span> <span class="cls">MyComponent</span> <span class="kw">extends</span> <span class="cls">LightningElement</span> {
+    message = <span class="str">'Hello from bundle'</span>;
+}`
+      },
+      {
+        q: "Explain meta.xml file properties.",
+        a: "The meta.xml handles component metadata: <strong>isExposed</strong> (makes component visible in App Builder), <strong>targets</strong> (where the component can be placed), and <strong>targetConfigs</strong> (input properties configurable in App Builder per target).",
+        code: `<span class="cmt">&lt;!-- myComponent.js-meta.xml --&gt;</span>
+<span class="tag">&lt;?xml version="1.0" encoding="UTF-8"?&gt;</span>
+<span class="tag">&lt;LightningComponentBundle</span> <span class="attr">xmlns</span>=<span class="str">"http://soap.sforce.com/2006/04/metadata"</span><span class="tag">&gt;</span>
+    <span class="tag">&lt;apiVersion&gt;</span>59.0<span class="tag">&lt;/apiVersion&gt;</span>
+    <span class="tag">&lt;isExposed&gt;</span>true<span class="tag">&lt;/isExposed&gt;</span>
+    <span class="tag">&lt;targets&gt;</span>
+        <span class="tag">&lt;target&gt;</span>lightning__RecordPage<span class="tag">&lt;/target&gt;</span>
+        <span class="tag">&lt;target&gt;</span>lightning__HomePage<span class="tag">&lt;/target&gt;</span>
+    <span class="tag">&lt;/targets&gt;</span>
+    <span class="tag">&lt;targetConfigs&gt;</span>
+        <span class="tag">&lt;targetConfig</span> <span class="attr">targets</span>=<span class="str">"lightning__RecordPage"</span><span class="tag">&gt;</span>
+            <span class="tag">&lt;property</span> <span class="attr">name</span>=<span class="str">"recordId"</span> <span class="attr">type</span>=<span class="str">"String"</span><span class="tag">/&gt;</span>
+        <span class="tag">&lt;/targetConfig&gt;</span>
+    <span class="tag">&lt;/targetConfigs&gt;</span>
+<span class="tag">&lt;/LightningComponentBundle&gt;</span>`
+      },
+      {
+        q: "Can we deploy a component with an empty CSS file?",
+        a: "No. If you include a CSS file in the bundle, it <strong>must contain at least one valid style rule</strong>. An empty CSS file will cause a deployment failure.",
+        code: `<span class="cmt">/* ✅ Valid CSS file - has at least one rule */</span>
+.myClass {
+    color: red;
+}
+
+<span class="cmt">/* ❌ Invalid - empty file causes deployment failure */</span>`
+      },
+      {
+        q: "What is SLDS?",
+        a: "<strong>Salesforce Lightning Design System</strong> — a CSS framework providing pre-built utility classes, components, and icons that give your custom LWC a native Salesforce look and feel without writing custom styles.",
+        code: `<span class="tag">&lt;template&gt;</span>
+    <span class="tag">&lt;div</span> <span class="attr">class</span>=<span class="str">"slds-box slds-box_xx-small slds-theme_default"</span><span class="tag">&gt;</span>
+        <span class="tag">&lt;div</span> <span class="attr">class</span>=<span class="str">"slds-text-heading_medium"</span><span class="tag">&gt;</span>Styled with SLDS<span class="tag">&lt;/div&gt;</span>
+        <span class="tag">&lt;button</span> <span class="attr">class</span>=<span class="str">"slds-button slds-button_brand"</span><span class="tag">&gt;</span>Brand Button<span class="tag">&lt;/button&gt;</span>
+        <span class="tag">&lt;div</span> <span class="attr">class</span>=<span class="str">"slds-m-top_medium slds-text-color_success"</span><span class="tag">&gt;</span>
+            Success message using SLDS utilities
+        <span class="tag">&lt;/div&gt;</span>
+    <span class="tag">&lt;/div&gt;</span>
+<span class="tag">&lt;/template&gt;</span>`
+      },
+      {
+        q: "What are decorators in LWC?",
+        a: "Special JavaScript syntax with <strong>@ symbol</strong> that adds functionality to properties and methods. LWC has three decorators:<br><br><strong>@api</strong> — makes a property/method public (accessible by parent components).<br><strong>@track</strong> — tracks private properties for deep reactivity within objects/arrays.<br><strong>@wire</strong> — reads Salesforce data reactively, connecting to Apex or LDS adapters."
+      },
+      {
+        q: "What is ECMAScript?",
+        a: "ECMAScript is the <strong>standardized specification for JavaScript</strong>. JavaScript is an implementation of this standard. Each version (ES6, ES2022, etc.) adds new language features.",
+        code: `<span class="cmt">// ES2022 features like .at() method</span>
+<span class="kw">const</span> array = [<span class="num">10</span>, <span class="num">20</span>, <span class="num">30</span>, <span class="num">40</span>];
+console.<span class="fn">log</span>(array.<span class="fn">at</span>(-<span class="num">1</span>)); <span class="cmt">// 40</span>
+
+<span class="kw">class</span> <span class="cls">Person</span> {
+    name = <span class="str">'John'</span>;  <span class="cmt">// Public field</span>
+    #age = <span class="num">25</span>;      <span class="cmt">// Private field (ES2022)</span>
+}`
+      },
+      {
+        q: "What are ES6+ features used in LWC?",
+        a: "Key ES6+ features used in LWC: <strong>Arrow Functions</strong>, <strong>Classes</strong>, <strong>Template Literals</strong>, <strong>Destructuring</strong>, <strong>Modules (import/export)</strong>, <strong>Promises</strong>, and <strong>Let/Const</strong>.",
+        code: `<span class="cmt">// Arrow Function</span>
+<span class="kw">const</span> add = (a, b) => a + b;
+
+<span class="cmt">// Class</span>
+<span class="kw">class</span> <span class="cls">Vehicle</span> {
+    <span class="fn">constructor</span>(type) { <span class="kw">this</span>.type = type; }
+    <span class="fn">getType</span>() { <span class="kw">return this</span>.type; }
+}
+
+<span class="cmt">// Template Literal</span>
+<span class="kw">const</span> name = <span class="str">'John'</span>;
+<span class="kw">const</span> greeting = <span class="str">\`Hello \${name}!\`</span>;
+
+<span class="cmt">// Destructuring</span>
+<span class="kw">const</span> [first, second] = [<span class="num">1</span>, <span class="num">2</span>, <span class="num">3</span>];
+<span class="kw">const</span> { name: userName, age } = { name: <span class="str">'Jane'</span>, age: <span class="num">30</span> };
+
+<span class="cmt">// Let and Const</span>
+<span class="kw">let</span> mutable = <span class="str">'can change'</span>;
+<span class="kw">const</span> immutable = <span class="str">'cannot reassign'</span>;`
+      },
+      {
+        q: "What is the difference between var, let, and const?",
+        a: "<strong>var</strong> — function-scoped and hoisted (initialized as undefined).<br><strong>let</strong> — block-scoped, not hoisted (temporal dead zone).<br><strong>const</strong> — block-scoped, cannot be reassigned (but object properties can be mutated).",
+        code: `<span class="cmt">// var - function scoped</span>
+<span class="kw">function</span> <span class="fn">varExample</span>() {
+    <span class="kw">if</span> (<span class="kw">true</span>) { <span class="kw">var</span> x = <span class="num">10</span>; }
+    console.<span class="fn">log</span>(x); <span class="cmt">// 10 - accessible outside block</span>
+}
+
+<span class="cmt">// let - block scoped</span>
+<span class="kw">if</span> (<span class="kw">true</span>) { <span class="kw">let</span> y = <span class="num">20</span>; }
+<span class="cmt">// console.log(y); // ReferenceError</span>
+
+<span class="cmt">// const - cannot reassign</span>
+<span class="kw">const</span> PI = <span class="num">3.14159</span>;
+<span class="cmt">// PI = 3.14; // Error: Assignment to constant variable</span>
+
+<span class="cmt">// Hoisting</span>
+console.<span class="fn">log</span>(varVar); <span class="cmt">// undefined (hoisted)</span>
+<span class="kw">var</span> varVar = <span class="str">'var'</span>;
+<span class="cmt">// console.log(letVar); // ReferenceError - temporal dead zone</span>
+<span class="kw">let</span> letVar = <span class="str">'let'</span>;`
+      },
+      {
+        q: "What is the difference between == and ===?",
+        a: "<strong>==</strong> (Abstract Equality) — performs <strong>type coercion</strong> before comparing. '5' == 5 is true.<br><strong>===</strong> (Strict Equality) — compares <strong>value AND type</strong> without conversion. '5' === 5 is false.<br><br>Best practice: Always use === to avoid unexpected type coercion bugs.",
+        code: `<span class="cmt">// == (with type conversion)</span>
+console.<span class="fn">log</span>(<span class="num">5</span> == <span class="str">'5'</span>);            <span class="cmt">// true</span>
+console.<span class="fn">log</span>(<span class="kw">false</span> == <span class="num">0</span>);        <span class="cmt">// true</span>
+console.<span class="fn">log</span>(<span class="kw">null</span> == <span class="kw">undefined</span>); <span class="cmt">// true</span>
+
+<span class="cmt">// === (strict, no conversion)</span>
+console.<span class="fn">log</span>(<span class="num">5</span> === <span class="str">'5'</span>);           <span class="cmt">// false</span>
+console.<span class="fn">log</span>(<span class="kw">false</span> === <span class="num">0</span>);       <span class="cmt">// false</span>
+console.<span class="fn">log</span>(<span class="kw">null</span> === <span class="kw">undefined</span>);<span class="cmt">// false</span>`
+      },
+      {
+        q: "What are import and export in JavaScript?",
+        a: "Modularity keywords to <strong>share code between files</strong>. <strong>export</strong> exposes values from a module. <strong>import</strong> brings them into another file. There is one default export per file, and unlimited named exports.",
+        code: `<span class="cmt">// utils.js - EXPORTS</span>
+<span class="kw">export const</span> PI = <span class="num">3.14159</span>;
+<span class="kw">export function</span> <span class="fn">add</span>(a, b) { <span class="kw">return</span> a + b; }
+<span class="kw">export default function</span> <span class="fn">greet</span>(name) {
+    <span class="kw">return</span> <span class="str">\`Hello \${name}!\`</span>;
+}
+
+<span class="cmt">// main.js - IMPORTS</span>
+<span class="kw">import</span> greet, { PI, add } <span class="kw">from</span> <span class="str">'./utils.js'</span>;
+
+console.<span class="fn">log</span>(PI);           <span class="cmt">// 3.14159</span>
+console.<span class="fn">log</span>(<span class="fn">add</span>(<span class="num">5</span>, <span class="num">3</span>));   <span class="cmt">// 8</span>
+console.<span class="fn">log</span>(<span class="fn">greet</span>(<span class="str">'John'</span>));<span class="cmt">// Hello John!</span>
+
+<span class="cmt">// Import everything as namespace</span>
+<span class="kw">import</span> * <span class="kw">as</span> Utils <span class="kw">from</span> <span class="str">'./utils.js'</span>;
+console.<span class="fn">log</span>(Utils.PI);`
+      },
+      {
+        q: "What is a utility module in LWC?",
+        a: "A JavaScript file with <strong>reusable functions but no HTML template</strong>. It exports helper functions that any component can import. This promotes code reuse across components without duplication.",
+        code: `<span class="cmt">// utils/stringHelper.js (Utility Module - no .html file)</span>
+<span class="kw">export function</span> <span class="fn">capitalize</span>(str) {
+    <span class="kw">return</span> str.<span class="fn">charAt</span>(<span class="num">0</span>).<span class="fn">toUpperCase</span>() + str.<span class="fn">slice</span>(<span class="num">1</span>).<span class="fn">toLowerCase</span>();
+}
+
+<span class="kw">export function</span> <span class="fn">truncate</span>(str, maxLength) {
+    <span class="kw">return</span> str.length > maxLength ? str.<span class="fn">substring</span>(<span class="num">0</span>, maxLength) + <span class="str">'...'</span> : str;
+}
+
+<span class="cmt">// myComponent.js - consuming the utility</span>
+<span class="kw">import</span> { LightningElement } <span class="kw">from</span> <span class="str">'lwc'</span>;
+<span class="kw">import</span> { capitalize, truncate } <span class="kw">from</span> <span class="str">'c/stringHelper'</span>;
+
+<span class="kw">export default class</span> <span class="cls">MyComponent</span> <span class="kw">extends</span> <span class="cls">LightningElement</span> {
+    <span class="fn">get</span> formattedName() {
+        <span class="kw">return</span> <span class="fn">capitalize</span>(<span class="str">'john doe'</span>); <span class="cmt">// "John Doe"</span>
+    }
+}`
+      },
+      {
+        q: "What is the spread operator in JavaScript?",
+        a: "The <strong>... (spread operator)</strong> copies or expands elements of an array or object. In LWC it's essential for <strong>triggering reactivity</strong> when updating arrays and objects, since you must create a new reference.",
+        code: `<span class="cmt">// Array spread</span>
+<span class="kw">const</span> numbers = [<span class="num">1</span>, <span class="num">2</span>, <span class="num">3</span>];
+<span class="kw">const</span> moreNumbers = [...numbers, <span class="num">4</span>, <span class="num">5</span>]; <span class="cmt">// [1,2,3,4,5]</span>
+
+<span class="cmt">// Object spread</span>
+<span class="kw">const</span> user = { name: <span class="str">'John'</span>, age: <span class="num">30</span> };
+<span class="kw">const</span> newUser = { ...user, age: <span class="num">31</span> }; <span class="cmt">// { name: 'John', age: 31 }</span>
+
+<span class="cmt">// In LWC - triggers re-render by creating new reference</span>
+<span class="kw">export default class</span> <span class="cls">SpreadDemo</span> <span class="kw">extends</span> <span class="cls">LightningElement</span> {
+    list = [<span class="str">'A'</span>, <span class="str">'B'</span>, <span class="str">'C'</span>];
+
+    <span class="fn">addItem</span>() {
+        <span class="kw">this</span>.list = [...<span class="kw">this</span>.list, <span class="str">'D'</span>]; <span class="cmt">// New reference → triggers reactivity</span>
+    }
+
+    <span class="fn">updateUser</span>() {
+        <span class="kw">this</span>.user = { ...<span class="kw">this</span>.user, lastLogin: <span class="kw">new</span> <span class="cls">Date</span>() };
+    }
+}`
+      },
+      {
+        q: "What are template literals?",
+        a: "Strings enclosed in <strong>backticks (`)</strong> that support multiline strings and <strong>interpolation</strong> using ${}. You can embed any JavaScript expression inside ${}.",
+        code: `<span class="kw">const</span> name = <span class="str">'Jane'</span>;
+<span class="kw">const</span> greeting = <span class="str">\`Hello \${name}!\`</span>; <span class="cmt">// "Hello Jane!"</span>
+
+<span class="cmt">// Multiline (no \\n needed)</span>
+<span class="kw">const</span> multiline = <span class="str">\`
+    Line 1
+    Line 2
+\`</span>;
+
+<span class="cmt">// Expressions inside</span>
+<span class="kw">const</span> a = <span class="num">10</span>, b = <span class="num">20</span>;
+<span class="kw">const</span> result = <span class="str">\`\${a} + \${b} = \${a + b}\`</span>; <span class="cmt">// "10 + 20 = 30"</span>
+
+<span class="cmt">// Ternary inside</span>
+<span class="kw">const</span> status = <span class="str">'active'</span>;
+<span class="kw">const</span> display = <span class="str">\`Status: \${status === 'active' ? 'Online' : 'Offline'}\`</span>;`
+      },
+      {
+        q: "What is the nullish coalescing operator (??)?",
+        a: "Returns the <strong>right side only when the left side is null or undefined</strong> — not for other falsy values like 0 or empty string. This is the key difference from the || operator.",
+        code: `<span class="cmt">// || triggers on ANY falsy value</span>
+<span class="kw">const</span> v1 = <span class="num">0</span> || <span class="str">'default'</span>;   <span class="cmt">// 'default' (0 is falsy)</span>
+<span class="kw">const</span> v2 = <span class="str">''</span> || <span class="str">'default'</span>;  <span class="cmt">// 'default' (empty string is falsy)</span>
+
+<span class="cmt">// ?? only triggers for null or undefined</span>
+<span class="kw">const</span> v3 = <span class="num">0</span> ?? <span class="str">'default'</span>;   <span class="cmt">// 0 (not null/undefined)</span>
+<span class="kw">const</span> v4 = <span class="str">''</span> ?? <span class="str">'default'</span>;  <span class="cmt">// '' (not null/undefined)</span>
+<span class="kw">const</span> v5 = <span class="kw">null</span> ?? <span class="str">'default'</span>;<span class="cmt">// 'default'</span>
+
+<span class="cmt">// LWC practical use</span>
+<span class="fn">get</span> effectivePageSize() {
+    <span class="kw">return this</span>.pageSize ?? <span class="num">20</span>; <span class="cmt">// Use 0 if explicitly set, else 20</span>
+}`
+      },
+      {
+        q: "What are Promises in JavaScript?",
+        a: "An object representing the <strong>eventual completion or failure</strong> of an async operation. States: <strong>Pending</strong> (initial), <strong>Fulfilled</strong> (success), <strong>Rejected</strong> (failure). Used in LWC for imperative Apex calls.",
+        code: `<span class="cmt">// Creating a Promise</span>
+<span class="kw">const</span> fetchData = <span class="kw">new</span> <span class="cls">Promise</span>((resolve, reject) => {
+    setTimeout(() => {
+        <span class="kw">const</span> success = <span class="kw">true</span>;
+        <span class="kw">if</span> (success) { <span class="fn">resolve</span>({ id: <span class="num">1</span>, name: <span class="str">'Data loaded'</span> }); }
+        <span class="kw">else</span> { <span class="fn">reject</span>(<span class="kw">new</span> <span class="cls">Error</span>(<span class="str">'Failed'</span>)); }
+    }, <span class="num">1000</span>);
+});
+
+<span class="cmt">// Consuming a Promise</span>
+fetchData
+    .<span class="fn">then</span>(result => console.<span class="fn">log</span>(<span class="str">'Success:'</span>, result))
+    .<span class="fn">catch</span>(error => console.<span class="fn">error</span>(<span class="str">'Error:'</span>, error.message))
+    .<span class="fn">finally</span>(() => console.<span class="fn">log</span>(<span class="str">'Always runs'</span>));
+
+<span class="cmt">// Promise.all — parallel execution</span>
+<span class="cls">Promise</span>.<span class="fn">all</span>([<span class="fn">fetchUser</span>(), <span class="fn">fetchPosts</span>()])
+    .<span class="fn">then</span>(([user, posts]) => console.<span class="fn">log</span>(user, posts));`
+      }
+    ],
+    intermediate: [
+      {
+        q: "What are lifecycle hooks in LWC?",
+        a: "Callback methods that run code at specific stages of a component's life. The five hooks are:<br><br><strong>constructor()</strong> — first call, initialize variables, call super() first, no DOM access.<br><strong>connectedCallback()</strong> — fires when inserted into DOM, best for Apex calls and subscriptions.<br><strong>renderedCallback()</strong> — fires after every render; use a flag to prevent infinite loops.<br><strong>disconnectedCallback()</strong> — fires when removed from DOM; use for cleanup (unsubscribe, clearInterval).<br><strong>errorCallback(error, stack)</strong> — captures errors from child components like a UI try-catch.",
+        code: `<span class="kw">import</span> { LightningElement } <span class="kw">from</span> <span class="str">'lwc'</span>;
+
+<span class="kw">export default class</span> <span class="cls">LifecycleDemo</span> <span class="kw">extends</span> <span class="cls">LightningElement</span> {
+    <span class="fn">constructor</span>() {
+        <span class="kw">super</span>(); <span class="cmt">// Mandatory first call</span>
+        console.<span class="fn">log</span>(<span class="str">'1. Constructor - no DOM yet'</span>);
+    }
+
+    <span class="fn">connectedCallback</span>() {
+        console.<span class="fn">log</span>(<span class="str">'2. Connected - DOM available'</span>);
+        <span class="kw">this</span>.<span class="fn">loadData</span>(); <span class="cmt">// Good place for Apex calls</span>
+    }
+
+    <span class="fn">renderedCallback</span>() {
+        console.<span class="fn">log</span>(<span class="str">'3. Rendered - interact with DOM/libraries'</span>);
+    }
+
+    <span class="fn">disconnectedCallback</span>() {
+        console.<span class="fn">log</span>(<span class="str">'4. Removed - cleanup here'</span>);
+    }
+
+    <span class="fn">errorCallback</span>(error, stack) {
+        console.<span class="fn">log</span>(<span class="str">'5. Child error caught:'</span>, error.message);
+    }
+}`
+      },
+      {
+        q: "What is the order of lifecycle hooks for parent-child components?",
+        a: "Parent constructor → Parent connectedCallback → <strong>Child constructor → Child connectedCallback → Child renderedCallback</strong> → Parent renderedCallback.<br><br>The parent is always first to connect but last to render, since it waits for all children to render first.",
+        code: `<span class="cmt">// parent.js</span>
+<span class="kw">export default class</span> <span class="cls">Parent</span> <span class="kw">extends</span> <span class="cls">LightningElement</span> {
+    <span class="fn">constructor</span>() { <span class="kw">super</span>(); console.<span class="fn">log</span>(<span class="str">'1. Parent Constructor'</span>); }
+    <span class="fn">connectedCallback</span>() { console.<span class="fn">log</span>(<span class="str">'2. Parent connectedCallback'</span>); }
+    <span class="fn">renderedCallback</span>() { console.<span class="fn">log</span>(<span class="str">'5. Parent renderedCallback'</span>); }
+}
+
+<span class="cmt">// child.js</span>
+<span class="kw">export default class</span> <span class="cls">Child</span> <span class="kw">extends</span> <span class="cls">LightningElement</span> {
+    <span class="fn">constructor</span>() { <span class="kw">super</span>(); console.<span class="fn">log</span>(<span class="str">'3. Child Constructor'</span>); }
+    <span class="fn">connectedCallback</span>() { console.<span class="fn">log</span>(<span class="str">'4. Child connectedCallback'</span>); }
+    <span class="fn">renderedCallback</span>() { console.<span class="fn">log</span>(<span class="str">'5. Child renderedCallback'</span>); }
+}
+<span class="cmt">// Output: Parent Constructor → Parent connectedCallback
+//         → Child Constructor → Child connectedCallback
+//         → Child renderedCallback → Parent renderedCallback</span>`
+      },
+      {
+        q: "Explain the @wire decorator.",
+        a: "Reads Salesforce data <strong>reactively</strong>. When parameters change, wire automatically re-provisions data and the component re-renders. The Apex method must be marked <strong>@AuraEnabled(cacheable=true)</strong>.",
+        code: `<span class="kw">import</span> { LightningElement, wire } <span class="kw">from</span> <span class="str">'lwc'</span>;
+<span class="kw">import</span> getAccountList <span class="kw">from</span> <span class="str">'@salesforce/apex/AccountController.getAccountList'</span>;
+
+<span class="kw">export default class</span> <span class="cls">WireDemo</span> <span class="kw">extends</span> <span class="cls">LightningElement</span> {
+    <span class="dec">@wire</span>(getAccountList, { limit: <span class="num">10</span> })
+    accounts;
+
+    <span class="fn">get</span> hasAccounts() {
+        <span class="kw">return this</span>.accounts?.data?.length > <span class="num">0</span>;
+    }
+}
+
+<span class="cmt">// Apex - MUST be cacheable=true for @wire</span>
+<span class="kw">public with sharing class</span> <span class="cls">AccountController</span> {
+    <span class="dec">@AuraEnabled(cacheable=true)</span>
+    <span class="kw">public static</span> List&lt;Account&gt; <span class="fn">getAccountList</span>(Integer lim) {
+        <span class="kw">return</span> [SELECT Id, Name FROM Account LIMIT :lim];
+    }
+}`
+      },
+      {
+        q: "What is the difference between @wire and imperative Apex call?",
+        a: "<strong>@wire</strong> — reactive, cached, auto-provisions when parameters change. Read-only. Method must be cacheable=true. Declarative — framework manages when it fires.<br><br><strong>Imperative</strong> — manual, not cached by default. You control when it fires. Required for DML operations (insert, update, delete). Returns a Promise.",
+        code: `<span class="kw">import</span> { LightningElement, wire } <span class="kw">from</span> <span class="str">'lwc'</span>;
+<span class="kw">import</span> getAccounts <span class="kw">from</span> <span class="str">'@salesforce/apex/AccountController.getAccounts'</span>;
+<span class="kw">import</span> saveAccount <span class="kw">from</span> <span class="str">'@salesforce/apex/AccountController.saveAccount'</span>;
+
+<span class="kw">export default class</span> <span class="cls">WireVsImperative</span> <span class="kw">extends</span> <span class="cls">LightningElement</span> {
+    <span class="cmt">// @wire - reactive, cached, auto-runs</span>
+    <span class="dec">@wire</span>(getAccounts, { limit: <span class="num">10</span> })
+    wiredAccounts;
+
+    <span class="cmt">// Imperative - manual, not cached, required for DML</span>
+    <span class="fn">handleSave</span>() {
+        <span class="fn">saveAccount</span>({ account: <span class="kw">this</span>.accountData })
+            .<span class="fn">then</span>(result => console.<span class="fn">log</span>(<span class="str">'Saved:'</span>, result))
+            .<span class="fn">catch</span>(error => console.<span class="fn">error</span>(<span class="str">'Error:'</span>, error));
+    }
+}`
+      },
+      {
+        q: "How do you refresh @wire data?",
+        a: "Use <strong>refreshApex()</strong> function. You must pass the <strong>entire wired result object</strong> (not just .data). Call it after a DML operation to force the cache to re-fetch from the server.",
+        code: `<span class="kw">import</span> { LightningElement, wire } <span class="kw">from</span> <span class="str">'lwc'</span>;
+<span class="kw">import</span> getAccounts <span class="kw">from</span> <span class="str">'@salesforce/apex/AccountController.getAccounts'</span>;
+<span class="kw">import</span> { refreshApex } <span class="kw">from</span> <span class="str">'@salesforce/apex'</span>;
+
+<span class="kw">export default class</span> <span class="cls">RefreshExample</span> <span class="kw">extends</span> <span class="cls">LightningElement</span> {
+    wiredAccountResult; <span class="cmt">// Store the entire result</span>
+
+    <span class="dec">@wire</span>(getAccounts)
+    <span class="fn">wiredAccounts</span>(result) {
+        <span class="kw">this</span>.wiredAccountResult = result; <span class="cmt">// Must store full result</span>
+        <span class="kw">if</span> (result.data) { <span class="cmt">/* handle data */</span> }
+    }
+
+    <span class="fn">handleRefresh</span>() {
+        <span class="cmt">// Pass the FULL result — not just .data</span>
+        <span class="fn">refreshApex</span>(<span class="kw">this</span>.wiredAccountResult)
+            .<span class="fn">then</span>(() => console.<span class="fn">log</span>(<span class="str">'Data refreshed!'</span>));
+    }
+}
+<span class="cmt">// Why not just re-call the method?
+// @wire is not called manually — the framework manages it.
+// Calling imperatively returns cached data. refreshApex() bypasses the cache.</span>`
+      },
+      {
+        q: "Can we perform DML using @wire?",
+        a: "No. <strong>@wire is for reading data only</strong>. Apex methods used with @wire must be marked <strong>cacheable=true</strong>, and DML operations are not allowed inside cacheable methods.",
+        code: `<span class="cmt">// ❌ WRONG - DML not allowed in cacheable methods</span>
+<span class="dec">@AuraEnabled(cacheable=true)</span>
+<span class="kw">public static</span> Account <span class="fn">updateAccount</span>(Account acc) {
+    <span class="fn">update</span> acc; <span class="cmt">// ❌ ERROR: CalloutException</span>
+    <span class="kw">return</span> acc;
+}
+
+<span class="cmt">// ✅ CORRECT - Remove cacheable=true for DML</span>
+<span class="dec">@AuraEnabled</span>
+<span class="kw">public static</span> Account <span class="fn">updateAccount</span>(Account acc) {
+    <span class="fn">update</span> acc; <span class="cmt">// ✅ Works</span>
+    <span class="kw">return</span> acc;
+}
+<span class="cmt">// Then call it imperatively in LWC, not with @wire</span>`
+      },
+      {
+        q: "Can we use multiple decorators on one property?",
+        a: "No. A property can have <strong>only one LWC decorator</strong>. Combining two decorators on the same property (e.g., @api @track) will cause a compilation error.",
+        code: `<span class="cmt">// ❌ INVALID - two decorators on one property</span>
+<span class="dec">@api</span> <span class="dec">@track</span> myProperty = <span class="str">'value'</span>;
+
+<span class="cmt">// ✅ Use separate properties</span>
+<span class="dec">@api</span> publicProperty = <span class="str">'value'</span>;   <span class="cmt">// accessible by parent</span>
+<span class="dec">@track</span> privateProperty = <span class="str">'value'</span>; <span class="cmt">// deep tracking only</span>`
+      },
+      {
+        q: "Can decorators be used on methods?",
+        a: "Yes. <strong>@api on a method</strong> makes it callable by parent components. <strong>@wire on a method</strong> passes data and error as function arguments, giving you more control over how you handle the provisioned data.",
+        code: `<span class="kw">import</span> { LightningElement, api, wire } <span class="kw">from</span> <span class="str">'lwc'</span>;
+<span class="kw">import</span> getData <span class="kw">from</span> <span class="str">'@salesforce/apex/MyController.getData'</span>;
+
+<span class="kw">export default class</span> <span class="cls">MethodDecorators</span> <span class="kw">extends</span> <span class="cls">LightningElement</span> {
+    <span class="cmt">// @api on method - parent can call child.publicMethod()</span>
+    <span class="dec">@api</span>
+    <span class="fn">publicMethod</span>() {
+        console.<span class="fn">log</span>(<span class="str">'Called by parent!'</span>);
+        <span class="kw">return</span> <span class="str">'result'</span>;
+    }
+
+    <span class="cmt">// @wire on method - handles both data and error explicitly</span>
+    <span class="dec">@wire</span>(getData, { id: <span class="str">'$recordId'</span> })
+    <span class="fn">handleWireData</span>({ data, error }) {
+        <span class="kw">if</span> (data) { <span class="kw">this</span>.<span class="fn">processData</span>(data); }
+        <span class="kw">else if</span> (error) { console.<span class="fn">error</span>(error); }
+    }
+}
+
+<span class="cmt">// parent.js - calling the child @api method</span>
+<span class="fn">callChildMethod</span>() {
+    <span class="kw">const</span> child = <span class="kw">this</span>.template.<span class="fn">querySelector</span>(<span class="str">'c-child-component'</span>);
+    <span class="kw">const</span> result = child.<span class="fn">publicMethod</span>();
+}`
+      },
+      {
+        q: "Can we call Apex in connectedCallback instead of @wire?",
+        a: "Yes. Use an <strong>imperative call inside connectedCallback</strong>. This gives you full control over timing and logic. However, it is not cached or reactive like @wire.",
+        code: `<span class="kw">import</span> { LightningElement } <span class="kw">from</span> <span class="str">'lwc'</span>;
+<span class="kw">import</span> getAccountDetails <span class="kw">from</span> <span class="str">'@salesforce/apex/AccountController.getAccountDetails'</span>;
+
+<span class="kw">export default class</span> <span class="cls">ImperativeInConnected</span> <span class="kw">extends</span> <span class="cls">LightningElement</span> {
+    accountData;
+    error;
+
+    <span class="fn">connectedCallback</span>() {
+        <span class="kw">this</span>.<span class="fn">loadAccountData</span>(); <span class="cmt">// Call on mount</span>
+    }
+
+    <span class="fn">loadAccountData</span>() {
+        <span class="fn">getAccountDetails</span>({ accountId: <span class="str">'001XXXXXXX'</span> })
+            .<span class="fn">then</span>(result => { <span class="kw">this</span>.accountData = result; })
+            .<span class="fn">catch</span>(error => { <span class="kw">this</span>.error = error; });
+    }
+}
+<span class="cmt">// Can we call @wire inside connectedCallback? NO.
+// @wire is declarative — the framework manages it, not your code.
+// The wire service initializes before connectedCallback even runs.</span>`
+      },
+      {
+        q: "What are the three LDS base components?",
+        a: "<strong>lightning-record-form</strong> — simplest; auto layout with Save/Cancel, modes: view/edit/readonly.<br><strong>lightning-record-edit-form</strong> — custom layout for creating/editing; you add lightning-input-field and a submit button manually.<br><strong>lightning-record-view-form</strong> — read-only display; use lightning-output-field inside it.",
+        code: `<span class="cmt">&lt;!-- Read-Only --&gt;</span>
+<span class="tag">&lt;lightning-record-view-form</span> <span class="attr">record-id</span>=<span class="str">"001XXX"</span> <span class="attr">object-api-name</span>=<span class="str">"Account"</span><span class="tag">&gt;</span>
+    <span class="tag">&lt;lightning-output-field</span> <span class="attr">field-name</span>=<span class="str">"Name"</span><span class="tag">&gt;&lt;/lightning-output-field&gt;</span>
+<span class="tag">&lt;/lightning-record-view-form&gt;</span>
+
+<span class="cmt">&lt;!-- Edit with custom layout --&gt;</span>
+<span class="tag">&lt;lightning-record-edit-form</span> <span class="attr">record-id</span>=<span class="str">"001XXX"</span> <span class="attr">object-api-name</span>=<span class="str">"Account"</span><span class="tag">&gt;</span>
+    <span class="tag">&lt;lightning-input-field</span> <span class="attr">field-name</span>=<span class="str">"Name"</span><span class="tag">&gt;&lt;/lightning-input-field&gt;</span>
+    <span class="tag">&lt;lightning-button</span> <span class="attr">type</span>=<span class="str">"submit"</span> <span class="attr">label</span>=<span class="str">"Save"</span><span class="tag">&gt;&lt;/lightning-button&gt;</span>
+<span class="tag">&lt;/lightning-record-edit-form&gt;</span>
+
+<span class="cmt">&lt;!-- Fastest - auto layout, handles everything --&gt;</span>
+<span class="tag">&lt;lightning-record-form</span>
+    <span class="attr">record-id</span>=<span class="str">"001XXX"</span>
+    <span class="attr">object-api-name</span>=<span class="str">"Account"</span>
+    <span class="attr">layout-type</span>=<span class="str">"Full"</span><span class="tag">&gt;</span>
+<span class="tag">&lt;/lightning-record-form&gt;</span>`
+      },
+      {
+        q: "What are the three ways to communicate between LWC components?",
+        a: "<strong>1. Parent to Child</strong> — Parent sets child's public @api property in HTML template.<br><strong>2. Child to Parent</strong> — Child dispatches a CustomEvent; parent listens with on* syntax.<br><strong>3. Unrelated Components</strong> — Use Lightning Message Service (LMS) or Pub/Sub pattern.",
+        code: `<span class="cmt">// 1. Parent to Child - via @api property</span>
+<span class="cmt">// Parent: &lt;c-child parent-message={value}&gt;&lt;/c-child&gt;</span>
+<span class="cmt">// Child: @api parentMessage;</span>
+
+<span class="cmt">// 2. Child to Parent - via CustomEvent</span>
+<span class="cmt">// Child: this.dispatchEvent(new CustomEvent('send', {detail: data}));</span>
+<span class="cmt">// Parent: &lt;c-child onsend={handleEvent}&gt;&lt;/c-child&gt;</span>
+
+<span class="cmt">// 3. Unrelated - via LMS</span>
+<span class="cmt">// Publisher: publish(this.messageContext, CHANNEL, message);</span>
+<span class="cmt">// Subscriber: subscribe(this.messageContext, CHANNEL, callback);</span>`
+      },
+      {
+        q: "How do you pass data from parent to child?",
+        a: "Parent <strong>sets the child's @api property</strong> directly in the HTML template using attribute binding. The property name in HTML uses kebab-case.",
+        code: `<span class="cmt">// child.js</span>
+<span class="kw">import</span> { LightningElement, api } <span class="kw">from</span> <span class="str">'lwc'</span>;
+<span class="kw">export default class</span> <span class="cls">ChildComponent</span> <span class="kw">extends</span> <span class="cls">LightningElement</span> {
+    <span class="dec">@api</span> parentMessage = <span class="str">''</span>;
+}
+
+<span class="cmt">&lt;!-- child.html --&gt;</span>
+<span class="tag">&lt;template&gt;</span>
+    <span class="tag">&lt;div&gt;</span>Message from parent: {parentMessage}<span class="tag">&lt;/div&gt;</span>
+<span class="tag">&lt;/template&gt;</span>
+
+<span class="cmt">&lt;!-- parent.html (camelCase → kebab-case) --&gt;</span>
+<span class="tag">&lt;template&gt;</span>
+    <span class="tag">&lt;c-child-component</span> <span class="attr">parent-message</span>={messageToChild}<span class="tag">&gt;&lt;/c-child-component&gt;</span>
+<span class="tag">&lt;/template&gt;</span>
+
+<span class="cmt">// parent.js</span>
+<span class="kw">export default class</span> <span class="cls">Parent</span> <span class="kw">extends</span> <span class="cls">LightningElement</span> {
+    messageToChild = <span class="str">'Hello from Parent!'</span>;
+}`
+      },
+      {
+        q: "How do you pass data from child to parent?",
+        a: "Child <strong>dispatches a CustomEvent</strong> with data in the detail property. Parent listens using the <strong>on[eventname]</strong> attribute in HTML and handles it in JavaScript.",
+        code: `<span class="cmt">// child.js</span>
+<span class="fn">sendDataToParent</span>() {
+    <span class="kw">const</span> event = <span class="kw">new</span> <span class="cls">CustomEvent</span>(<span class="str">'datasent'</span>, {
+        detail: { message: <span class="str">'Hello from Child!'</span> }
+    });
+    <span class="kw">this</span>.<span class="fn">dispatchEvent</span>(event);
+}
+
+<span class="cmt">&lt;!-- child.html --&gt;</span>
+<span class="tag">&lt;button</span> <span class="attr">onclick</span>={sendDataToParent}<span class="tag">&gt;</span>Send to Parent<span class="tag">&lt;/button&gt;</span>
+
+<span class="cmt">&lt;!-- parent.html --&gt;</span>
+<span class="tag">&lt;c-child-component</span> <span class="attr">ondatasent</span>={handleDataFromChild}<span class="tag">&gt;&lt;/c-child-component&gt;</span>
+<span class="tag">&lt;div&gt;</span>Received: {receivedMessage}<span class="tag">&lt;/div&gt;</span>
+
+<span class="cmt">// parent.js</span>
+<span class="fn">handleDataFromChild</span>(event) {
+    <span class="kw">this</span>.receivedMessage = event.detail.message;
+}`
+      },
+      {
+        q: "What is Lightning Message Service (LMS)?",
+        a: "A framework allowing components to communicate <strong>across the entire Lightning experience</strong> — including LWC, Aura, and Visualforce on the same page. It uses a Message Channel as the communication backbone.",
+        code: `<span class="cmt">&lt;!-- messageChannel/AppChannel.mc --&gt;</span>
+<span class="tag">&lt;LightningMessageChannel&gt;</span>
+    <span class="tag">&lt;masterLabel&gt;</span>AppMessageChannel<span class="tag">&lt;/masterLabel&gt;</span>
+    <span class="tag">&lt;isExposed&gt;</span>true<span class="tag">&lt;/isExposed&gt;</span>
+    <span class="tag">&lt;lightningMessageFields&gt;</span>
+        <span class="tag">&lt;fieldName&gt;</span>messageData<span class="tag">&lt;/fieldName&gt;</span>
+    <span class="tag">&lt;/lightningMessageFields&gt;</span>
+<span class="tag">&lt;/LightningMessageChannel&gt;</span>
+
+<span class="cmt">// Publisher.js</span>
+<span class="kw">import</span> { publish, MessageContext } <span class="kw">from</span> <span class="str">'lightning/messageService'</span>;
+<span class="kw">import</span> APP_CHANNEL <span class="kw">from</span> <span class="str">'@salesforce/messageChannel/AppChannel__c'</span>;
+<span class="dec">@wire</span>(MessageContext) messageContext;
+
+<span class="fn">handleSend</span>() {
+    <span class="fn">publish</span>(<span class="kw">this</span>.messageContext, APP_CHANNEL, { messageData: <span class="str">'Hello!'</span> });
+}
+
+<span class="cmt">// Subscriber.js</span>
+<span class="kw">import</span> { subscribe, unsubscribe, MessageContext } <span class="kw">from</span> <span class="str">'lightning/messageService'</span>;
+<span class="dec">@wire</span>(MessageContext) messageContext;
+subscription;
+
+<span class="fn">connectedCallback</span>() {
+    <span class="kw">this</span>.subscription = <span class="fn">subscribe</span>(
+        <span class="kw">this</span>.messageContext, APP_CHANNEL,
+        (msg) => { <span class="kw">this</span>.receivedMessage = msg.messageData; }
+    );
+}
+<span class="fn">disconnectedCallback</span>() { <span class="fn">unsubscribe</span>(<span class="kw">this</span>.subscription); }`
+      },
+      {
+        q: "Can we use expressions in LWC HTML?",
+        a: "No. LWC HTML templates <strong>do not support JavaScript expressions</strong> like ternary operators, function calls, or arithmetic. All logic must be moved to the JavaScript file using <strong>getter methods</strong>.",
+        code: `<span class="cmt">&lt;!-- ❌ INVALID --&gt;</span>
+<span class="tag">&lt;div&gt;</span>{count &gt; 10 ? 'High' : 'Low'}<span class="tag">&lt;/div&gt;</span>
+<span class="tag">&lt;button</span> <span class="attr">disabled</span>={!isValid()}<span class="tag">&gt;</span>Submit<span class="tag">&lt;/button&gt;</span>
+
+<span class="cmt">// ✅ CORRECT - Use getters in JS</span>
+<span class="kw">get</span> statusLabel() {
+    <span class="kw">return this</span>.count > <span class="num">10</span> ? <span class="str">'High'</span> : <span class="str">'Low'</span>;
+}
+<span class="kw">get</span> isButtonDisabled() {
+    <span class="kw">return</span> !<span class="kw">this</span>.inputValue;
+}
+<span class="kw">get</span> activeItems() {
+    <span class="kw">return this</span>.items?.filter(item => item.isActive) || [];
+}
+
+<span class="cmt">&lt;!-- ✅ VALID HTML --&gt;</span>
+<span class="tag">&lt;div&gt;</span>{statusLabel}<span class="tag">&lt;/div&gt;</span>
+<span class="tag">&lt;button</span> <span class="attr">disabled</span>={isButtonDisabled}<span class="tag">&gt;</span>Submit<span class="tag">&lt;/button&gt;</span>`
+      },
+      {
+        q: "What is DOM and Shadow DOM?",
+        a: "<strong>DOM (Document Object Model)</strong> — the entire document tree; accessible globally; affected by global CSS.<br><strong>Shadow DOM</strong> — an encapsulated, private DOM inside a component. LWC uses Shadow DOM so a component's CSS does not leak out and global CSS cannot break in.",
+        code: `<span class="cmt">// Regular DOM - global CSS affects all p tags</span>
+<span class="tag">&lt;div</span> <span class="attr">class</span>=<span class="str">"regular-dom"</span><span class="tag">&gt;&lt;/div&gt;</span>
+
+<span class="cmt">// Creating Shadow DOM (browser API)</span>
+<span class="kw">const</span> element = document.<span class="fn">createElement</span>(<span class="str">'div'</span>);
+<span class="kw">const</span> shadowRoot = element.<span class="fn">attachShadow</span>({ mode: <span class="str">'open'</span> });
+shadowRoot.innerHTML = <span class="str">\`
+    &lt;style&gt;
+        p { color: red; } /* Only applies inside shadow */
+    &lt;/style&gt;
+    &lt;p&gt;Protected by Shadow DOM&lt;/p&gt;
+\`</span>;
+
+<span class="cmt">// LWC automatically uses Shadow DOM for all components
+// myComponent.css styles ONLY affect myComponent's template
+// No style leakage in or out</span>`
+      },
+      {
+        q: "How do you pass data from HTML to JS?",
+        a: "Via <strong>event handlers</strong>. Use <strong>event.target.value</strong> for input values. Use <strong>event.target.dataset</strong> to read data-* attributes. Use <strong>event.detail.value</strong> for Lightning base component events.",
+        code: `<span class="cmt">&lt;!-- HTML --&gt;</span>
+<span class="tag">&lt;lightning-input</span> <span class="attr">label</span>=<span class="str">"Name"</span> <span class="attr">onchange</span>={handleNameChange}<span class="tag">&gt;&lt;/lightning-input&gt;</span>
+<span class="tag">&lt;button</span> <span class="attr">data-id</span>=<span class="str">"123"</span> <span class="attr">data-action</span>=<span class="str">"delete"</span> <span class="attr">onclick</span>={handleButtonClick}<span class="tag">&gt;</span>Delete<span class="tag">&lt;/button&gt;</span>
+
+<span class="cmt">// JS</span>
+<span class="fn">handleNameChange</span>(event) {
+    <span class="kw">this</span>.name = event.target.value; <span class="cmt">// For standard input</span>
+    <span class="cmt">// OR event.detail.value for lightning-input</span>
+}
+
+<span class="fn">handleButtonClick</span>(event) {
+    <span class="kw">const</span> userId = event.target.dataset.id;     <span class="cmt">// "123"</span>
+    <span class="kw">const</span> action = event.target.dataset.action; <span class="cmt">// "delete"</span>
+    console.<span class="fn">log</span>(<span class="str">\`\${action} user \${userId}\`</span>);
+}
+
+<span class="fn">handleCheckboxChange</span>(event) {
+    <span class="kw">this</span>.isAgreed = event.target.checked;
+}
+
+<span class="fn">handleComboboxChange</span>(event) {
+    <span class="kw">this</span>.selectedValue = event.detail.value; <span class="cmt">// Lightning base events use event.detail</span>
+}`
+      },
+      {
+        q: "How do you get the current user ID in LWC?",
+        a: "Import it from <strong>@salesforce/user/Id</strong>. It is resolved at compile time and gives you the running user's 18-character Salesforce ID.",
+        code: `<span class="kw">import</span> { LightningElement } <span class="kw">from</span> <span class="str">'lwc'</span>;
+<span class="kw">import</span> userId <span class="kw">from</span> <span class="str">'@salesforce/user/Id'</span>;
+
+<span class="kw">export default class</span> <span class="cls">UserIdDemo</span> <span class="kw">extends</span> <span class="cls">LightningElement</span> {
+    currentUserId = userId;
+
+    <span class="fn">connectedCallback</span>() {
+        console.<span class="fn">log</span>(<span class="str">'Current User ID:'</span>, <span class="kw">this</span>.currentUserId);
+    }
+}
+
+<span class="cmt">&lt;!-- HTML --&gt;</span>
+<span class="tag">&lt;template&gt;</span>
+    <span class="tag">&lt;div&gt;</span>Your User ID: {currentUserId}<span class="tag">&lt;/div&gt;</span>
+<span class="tag">&lt;/template&gt;</span>`
+      },
+      {
+        q: "How do you get the record ID in LWC?",
+        a: "Declare a <strong>public @api recordId</strong> property. When the component is placed on a Record Page, Salesforce automatically injects the current record's ID into it.",
+        code: `<span class="kw">import</span> { LightningElement, api, wire } <span class="kw">from</span> <span class="str">'lwc'</span>;
+<span class="kw">import</span> getRecordDetails <span class="kw">from</span> <span class="str">'@salesforce/apex/RecordController.getRecordDetails'</span>;
+
+<span class="kw">export default class</span> <span class="cls">RecordComponent</span> <span class="kw">extends</span> <span class="cls">LightningElement</span> {
+    <span class="dec">@api</span> recordId; <span class="cmt">// Auto-injected by Salesforce on Record Pages</span>
+
+    <span class="dec">@wire</span>(getRecordDetails, { recordId: <span class="str">'$recordId'</span> })
+    wiredRecord;
+}
+
+<span class="cmt">&lt;!-- meta.xml MUST include RecordPage target --&gt;</span>
+<span class="tag">&lt;targets&gt;</span>
+    <span class="tag">&lt;target&gt;</span>lightning__RecordPage<span class="tag">&lt;/target&gt;</span>
+<span class="tag">&lt;/targets&gt;</span>`
+      }
+    ],
+    advanced: [
+      {
+        q: "How do you render multiple templates in LWC?",
+        a: "Import multiple HTML files and <strong>override the render() method</strong> to return the appropriate template based on logic. Each imported template is a valid HTML file in the component bundle.",
+        code: `<span class="kw">import</span> { LightningElement } <span class="kw">from</span> <span class="str">'lwc'</span>;
+<span class="kw">import</span> templateOne <span class="kw">from</span> <span class="str">'./templateOne.html'</span>;
+<span class="kw">import</span> templateTwo <span class="kw">from</span> <span class="str">'./templateTwo.html'</span>;
+<span class="kw">import</span> loadingTemplate <span class="kw">from</span> <span class="str">'./loadingTemplate.html'</span>;
+<span class="kw">import</span> errorTemplate <span class="kw">from</span> <span class="str">'./errorTemplate.html'</span>;
+
+<span class="kw">export default class</span> <span class="cls">MultipleTemplates</span> <span class="kw">extends</span> <span class="cls">LightningElement</span> {
+    deviceType = <span class="str">'desktop'</span>;
+
+    <span class="fn">render</span>() {
+        <span class="kw">switch</span>(<span class="kw">this</span>.deviceType) {
+            <span class="kw">case</span> <span class="str">'mobile'</span>:    <span class="kw">return</span> templateTwo;
+            <span class="kw">case</span> <span class="str">'loading'</span>:   <span class="kw">return</span> loadingTemplate;
+            <span class="kw">case</span> <span class="str">'error'</span>:     <span class="kw">return</span> errorTemplate;
+            <span class="kw">default</span>:         <span class="kw">return</span> templateOne;
+        }
+    }
+
+    <span class="fn">connectedCallback</span>() {
+        <span class="kw">this</span>.deviceType = window.innerWidth < <span class="num">768</span> ? <span class="str">'mobile'</span> : <span class="str">'desktop'</span>;
+    }
+}`
+      },
+      {
+        q: "How do you use third-party JS libraries in LWC?",
+        a: "Upload as a <strong>Static Resource</strong>, import using <strong>loadScript</strong> from lightning/platformResourceLoader, then initialize in <strong>renderedCallback()</strong>. Use a boolean flag to prevent re-initialization on every re-render.",
+        code: `<span class="kw">import</span> { LightningElement } <span class="kw">from</span> <span class="str">'lwc'</span>;
+<span class="kw">import</span> { loadScript, loadStyle } <span class="kw">from</span> <span class="str">'lightning/platformResourceLoader'</span>;
+<span class="kw">import</span> chartJS <span class="kw">from</span> <span class="str">'@salesforce/resourceUrl/chartjs'</span>;
+
+<span class="kw">export default class</span> <span class="cls">ChartComponent</span> <span class="kw">extends</span> <span class="cls">LightningElement</span> {
+    chartInitialized = <span class="kw">false</span>; <span class="cmt">// Flag prevents re-init</span>
+
+    <span class="fn">renderedCallback</span>() {
+        <span class="kw">if</span> (<span class="kw">this</span>.chartInitialized) <span class="kw">return</span>; <span class="cmt">// Guard</span>
+        <span class="kw">this</span>.chartInitialized = <span class="kw">true</span>;
+
+        <span class="fn">loadScript</span>(<span class="kw">this</span>, chartJS + <span class="str">'/chart.js'</span>)
+            .<span class="fn">then</span>(() => { <span class="kw">this</span>.<span class="fn">initializeChart</span>(); })
+            .<span class="fn">catch</span>(error => { console.<span class="fn">error</span>(<span class="str">'Failed:'</span>, error); });
+    }
+
+    <span class="fn">initializeChart</span>() {
+        <span class="kw">const</span> canvas = <span class="kw">this</span>.template.<span class="fn">querySelector</span>(<span class="str">'canvas'</span>);
+        <span class="kw">const</span> ctx = canvas.<span class="fn">getContext</span>(<span class="str">'2d'</span>);
+        <span class="kw">new</span> <span class="cls">Chart</span>(ctx, {
+            type: <span class="str">'bar'</span>,
+            data: { labels: [<span class="str">'A'</span>, <span class="str">'B'</span>, <span class="str">'C'</span>], datasets: [{ data: [<span class="num">1</span>, <span class="num">2</span>, <span class="num">3</span>] }] }
+        });
+    }
+}`
+      },
+      {
+        q: "How do you create multilingual components in LWC?",
+        a: "Use <strong>Custom Labels</strong> imported from <strong>@salesforce/label/c.LabelName</strong>. Salesforce automatically returns the label in the running user's language based on the org's translation settings.",
+        code: `<span class="kw">import</span> { LightningElement } <span class="kw">from</span> <span class="str">'lwc'</span>;
+<span class="kw">import</span> welcomeMessage <span class="kw">from</span> <span class="str">'@salesforce/label/c.Welcome_Message'</span>;
+<span class="kw">import</span> saveLabel <span class="kw">from</span> <span class="str">'@salesforce/label/c.Save_Button'</span>;
+<span class="kw">import</span> cancelLabel <span class="kw">from</span> <span class="str">'@salesforce/label/c.Cancel_Button'</span>;
+
+<span class="kw">export default class</span> <span class="cls">MultilingualComponent</span> <span class="kw">extends</span> <span class="cls">LightningElement</span> {
+    labels = {
+        welcome: welcomeMessage,
+        save: saveLabel,
+        cancel: cancelLabel
+    };
+}
+
+<span class="cmt">&lt;!-- HTML --&gt;</span>
+<span class="tag">&lt;template&gt;</span>
+    <span class="tag">&lt;div&gt;</span>{labels.welcome}<span class="tag">&lt;/div&gt;</span>
+    <span class="tag">&lt;button&gt;</span>{labels.save}<span class="tag">&lt;/button&gt;</span>
+    <span class="tag">&lt;button&gt;</span>{labels.cancel}<span class="tag">&lt;/button&gt;</span>
+<span class="tag">&lt;/template&gt;</span>`
+      },
+      {
+        q: "How do you pass HTML from parent to child (Slots)?",
+        a: "Using <strong>Slots</strong>. The child defines <strong>&lt;slot&gt;</strong> elements as placeholders. The parent places HTML markup between the child's tags; that markup is rendered where the slot is.",
+        code: `<span class="cmt">&lt;!-- childWithSlot.html --&gt;</span>
+<span class="tag">&lt;template&gt;</span>
+    <span class="tag">&lt;div</span> <span class="attr">class</span>=<span class="str">"card"</span><span class="tag">&gt;</span>
+        <span class="tag">&lt;slot</span> <span class="attr">name</span>=<span class="str">"header"</span><span class="tag">&gt;</span>Default Header<span class="tag">&lt;/slot&gt;</span>
+        <span class="tag">&lt;slot&gt;</span>No content provided<span class="tag">&lt;/slot&gt;</span>
+        <span class="tag">&lt;slot</span> <span class="attr">name</span>=<span class="str">"footer"</span><span class="tag">&gt;</span>Default Footer<span class="tag">&lt;/slot&gt;</span>
+    <span class="tag">&lt;/div&gt;</span>
+<span class="tag">&lt;/template&gt;</span>
+
+<span class="cmt">&lt;!-- parentUsingSlot.html - fills each slot --&gt;</span>
+<span class="tag">&lt;c-child-with-slot&gt;</span>
+    <span class="tag">&lt;div</span> <span class="attr">slot</span>=<span class="str">"header"</span><span class="tag">&gt;</span>Custom Header from Parent<span class="tag">&lt;/div&gt;</span>
+
+    <span class="tag">&lt;p&gt;</span>Default slot content from parent<span class="tag">&lt;/p&gt;</span>
+
+    <span class="tag">&lt;div</span> <span class="attr">slot</span>=<span class="str">"footer"</span><span class="tag">&gt;</span>Footer by parent<span class="tag">&lt;/div&gt;</span>
+<span class="tag">&lt;/c-child-with-slot&gt;</span>`
+      },
+      {
+        q: "How do you pass data from child to grandparent?",
+        a: "Dispatch a CustomEvent with <strong>bubbles: true</strong> and <strong>composed: true</strong>. <strong>bubbles: true</strong> allows the event to travel up the DOM tree. <strong>composed: true</strong> allows it to cross Shadow DOM boundaries.",
+        code: `<span class="cmt">// grandchild.js</span>
+<span class="fn">sendToGrandparent</span>() {
+    <span class="kw">this</span>.<span class="fn">dispatchEvent</span>(<span class="kw">new</span> <span class="cls">CustomEvent</span>(<span class="str">'grandevent'</span>, {
+        detail: { data: <span class="str">'From Grandchild'</span> },
+        bubbles: <span class="kw">true</span>,   <span class="cmt">// Moves up the DOM tree</span>
+        composed: <span class="kw">true</span>   <span class="cmt">// Crosses Shadow DOM boundary</span>
+    }));
+}
+
+<span class="cmt">&lt;!-- parent.html (intermediate - no handler needed) --&gt;</span>
+<span class="tag">&lt;template&gt;</span>
+    <span class="tag">&lt;c-grandchild-component&gt;&lt;/c-grandchild-component&gt;</span>
+<span class="tag">&lt;/template&gt;</span>
+
+<span class="cmt">&lt;!-- grandparent.html --&gt;</span>
+<span class="tag">&lt;c-parent-component</span> <span class="attr">ongrandevent</span>={handleFromGrandchild}<span class="tag">&gt;&lt;/c-parent-component&gt;</span>
+
+<span class="cmt">// grandparent.js</span>
+<span class="fn">handleFromGrandchild</span>(event) {
+    console.<span class="fn">log</span>(event.detail.data); <span class="cmt">// 'From Grandchild'</span>
+}`
+      },
+      {
+        q: "What is Pub/Sub in LWC?",
+        a: "A <strong>Publisher/Subscriber pattern</strong> for communication between unrelated components within a single Salesforce page container. It is largely <strong>replaced by Lightning Message Service (LMS)</strong>, which works across page containers (Experience Cloud, VF pages, etc.).",
+        code: `<span class="cmt">// pubsub.js (utility module)</span>
+<span class="kw">const</span> events = {};
+<span class="kw">export function</span> <span class="fn">register</span>(eventName, callback) {
+    <span class="kw">if</span> (!events[eventName]) events[eventName] = [];
+    events[eventName].<span class="fn">push</span>(callback);
+}
+<span class="kw">export function</span> <span class="fn">unregister</span>(eventName, callback) {
+    <span class="kw">if</span> (events[eventName])
+        events[eventName] = events[eventName].<span class="fn">filter</span>(cb => cb !== callback);
+}
+<span class="kw">export function</span> <span class="fn">publish</span>(eventName, payload) {
+    <span class="kw">if</span> (events[eventName])
+        events[eventName].<span class="fn">forEach</span>(cb => <span class="fn">cb</span>(payload));
+}
+
+<span class="cmt">// componentA.js (Publisher)</span>
+<span class="kw">import</span> { publish } <span class="kw">from</span> <span class="str">'c/pubsub'</span>;
+<span class="fn">handleClick</span>() { <span class="fn">publish</span>(<span class="str">'dataEvent'</span>, { data: <span class="str">'Hello from A'</span> }); }
+
+<span class="cmt">// componentB.js (Subscriber)</span>
+<span class="kw">import</span> { register, unregister } <span class="kw">from</span> <span class="str">'c/pubsub'</span>;
+<span class="fn">connectedCallback</span>() { <span class="fn">register</span>(<span class="str">'dataEvent'</span>, <span class="kw">this</span>.handleData.<span class="fn">bind</span>(<span class="kw">this</span>)); }
+<span class="fn">disconnectedCallback</span>() { <span class="fn">unregister</span>(<span class="str">'dataEvent'</span>, <span class="kw">this</span>.handleData.<span class="fn">bind</span>(<span class="kw">this</span>)); }
+<span class="fn">handleData</span>(payload) { console.<span class="fn">log</span>(<span class="str">'Received:'</span>, payload.data); }`
+      },
+      {
+        q: "Can we perform CRUD without Apex?",
+        a: "Yes, using <strong>Lightning Data Service (LDS)</strong> wire adapters and functions: <strong>getRecord</strong> (READ), <strong>createRecord</strong> (CREATE), <strong>updateRecord</strong> (UPDATE), <strong>deleteRecord</strong> (DELETE) — all from <strong>lightning/uiRecordApi</strong>.",
+        code: `<span class="kw">import</span> { LightningElement, api, wire } <span class="kw">from</span> <span class="str">'lwc'</span>;
+<span class="kw">import</span> { getRecord, updateRecord, createRecord, deleteRecord } <span class="kw">from</span> <span class="str">'lightning/uiRecordApi'</span>;
+
+<span class="kw">export default class</span> <span class="cls">CrudWithoutApex</span> <span class="kw">extends</span> <span class="cls">LightningElement</span> {
+    <span class="dec">@api</span> recordId;
+
+    <span class="cmt">// READ</span>
+    <span class="dec">@wire</span>(getRecord, { recordId: <span class="str">'$recordId'</span>, fields: [<span class="str">'Account.Name'</span>] })
+    account;
+
+    <span class="cmt">// CREATE</span>
+    <span class="kw">async</span> <span class="fn">handleCreate</span>() {
+        <span class="kw">const</span> result = <span class="kw">await</span> <span class="fn">createRecord</span>({
+            apiName: <span class="str">'Account'</span>,
+            fields: { Name: <span class="str">'New Account'</span>, Industry: <span class="str">'Technology'</span> }
+        });
+    }
+
+    <span class="cmt">// UPDATE</span>
+    <span class="kw">async</span> <span class="fn">handleUpdate</span>() {
+        <span class="kw">await</span> <span class="fn">updateRecord</span>({ fields: { Id: <span class="kw">this</span>.recordId, Name: <span class="str">'Updated Name'</span> } });
+    }
+
+    <span class="cmt">// DELETE</span>
+    <span class="kw">async</span> <span class="fn">handleDelete</span>() {
+        <span class="kw">await</span> <span class="fn">deleteRecord</span>(<span class="kw">this</span>.recordId);
+    }
+}`
+      },
+      {
+        q: "Can we subscribe to Platform Events in LWC?",
+        a: "Yes, using the <strong>lightning/empApi</strong> module. Subscribe in <strong>connectedCallback()</strong> and unsubscribe in <strong>disconnectedCallback()</strong> to prevent memory leaks.",
+        code: `<span class="kw">import</span> { LightningElement } <span class="kw">from</span> <span class="str">'lwc'</span>;
+<span class="kw">import</span> { subscribe, unsubscribe, onError } <span class="kw">from</span> <span class="str">'lightning/empApi'</span>;
+
+<span class="kw">export default class</span> <span class="cls">PlatformEventSubscriber</span> <span class="kw">extends</span> <span class="cls">LightningElement</span> {
+    subscription = {};
+    receivedEvents = [];
+
+    <span class="fn">connectedCallback</span>() {
+        <span class="kw">const</span> channel = <span class="str">'/event/Order_Event__e'</span>;
+        <span class="fn">subscribe</span>(channel, -<span class="num">1</span>, (response) => {
+            <span class="kw">const</span> event = response.data.payload;
+            <span class="kw">this</span>.receivedEvents = [...<span class="kw">this</span>.receivedEvents, event];
+        }).<span class="fn">then</span>(res => { <span class="kw">this</span>.subscription = res; });
+
+        <span class="fn">onError</span>(error => console.<span class="fn">error</span>(<span class="str">'EMP error:'</span>, error));
+    }
+
+    <span class="fn">disconnectedCallback</span>() {
+        <span class="fn">unsubscribe</span>(<span class="kw">this</span>.subscription);
+    }
+
+    <span class="fn">get</span> eventCount() { <span class="kw">return this</span>.receivedEvents.length; }
+}`
+      },
+      {
+        q: "Can we call external APIs without Apex?",
+        a: "Yes, using the native <strong>fetch()</strong> API. However, you must first configure <strong>Remote Site Settings</strong> and <strong>CSP Trusted Sites</strong> in Salesforce Setup for the external domain.",
+        code: `<span class="kw">export default class</span> <span class="cls">ExternalApiComponent</span> <span class="kw">extends</span> <span class="cls">LightningElement</span> {
+    isLoading = <span class="kw">false</span>;
+    responseData;
+    error;
+
+    <span class="kw">async</span> <span class="fn">callExternalAPI</span>() {
+        <span class="kw">this</span>.isLoading = <span class="kw">true</span>;
+        <span class="kw">try</span> {
+            <span class="kw">const</span> response = <span class="kw">await</span> <span class="fn">fetch</span>(<span class="str">'https://api.example.com/data'</span>, {
+                method: <span class="str">'GET'</span>,
+                headers: { <span class="str">'Content-Type'</span>: <span class="str">'application/json'</span> }
+            });
+            <span class="kw">if</span> (!response.ok) <span class="kw">throw new</span> <span class="cls">Error</span>(<span class="str">\`HTTP \${response.status}\`</span>);
+            <span class="kw">this</span>.responseData = <span class="kw">await</span> response.<span class="fn">json</span>();
+        } <span class="kw">catch</span> (error) {
+            <span class="kw">this</span>.error = error.message;
+        } <span class="kw">finally</span> {
+            <span class="kw">this</span>.isLoading = <span class="kw">false</span>;
+        }
+    }
+}
+<span class="cmt">// Setup Required:
+// 1. Setup → Security → Remote Site Settings → Add domain
+// 2. Setup → CSP Trusted Sites → Add domain</span>`
+      },
+      {
+        q: "How do you use LWC in Visualforce Pages?",
+        a: "Using <strong>Lightning Out</strong>. Create an Aura Application that extends <strong>ltng:outApp</strong>, declare an Aura dependency on the LWC, then use the <strong>$Lightning.use()</strong> and <strong>$Lightning.createComponent()</strong> JavaScript APIs in the Visualforce page.",
+        code: `<span class="cmt">&lt;!-- auraApp.app --&gt;</span>
+<span class="tag">&lt;aura:application</span> <span class="attr">access</span>=<span class="str">"GLOBAL"</span> <span class="attr">extends</span>=<span class="str">"ltng:outApp"</span><span class="tag">&gt;</span>
+    <span class="tag">&lt;aura:dependency</span> <span class="attr">resource</span>=<span class="str">"c:myLwcComponent"</span><span class="tag">/&gt;</span>
+<span class="tag">&lt;/aura:application&gt;</span>
+
+<span class="cmt">&lt;!-- visualforcePage.page --&gt;</span>
+<span class="tag">&lt;apex:page&gt;</span>
+    <span class="tag">&lt;div</span> <span class="attr">id</span>=<span class="str">"lightningContainer"</span><span class="tag">&gt;&lt;/div&gt;</span>
+    <span class="tag">&lt;script&gt;</span>
+        $Lightning.<span class="fn">use</span>(<span class="str">"c:auraApp"</span>, <span class="kw">function</span>() {
+            $Lightning.<span class="fn">createComponent</span>(<span class="str">"c:myLwcComponent"</span>, {},
+                <span class="str">"lightningContainer"</span>, <span class="kw">function</span>(cmp) {
+                    console.<span class="fn">log</span>(<span class="str">"Component created"</span>);
+                }
+            );
+        });
+    <span class="tag">&lt;/script&gt;</span>
+<span class="tag">&lt;/apex:page&gt;</span>`
+      },
+      {
+        q: "Can we use LWC in Experience Cloud?",
+        a: "Yes. Add <strong>lightningCommunity__Page</strong> and <strong>lightningCommunity__Default</strong> targets to the meta.xml file. The component then becomes available in Experience Builder.",
+        code: `<span class="cmt">&lt;!-- meta.xml --&gt;</span>
+<span class="tag">&lt;LightningComponentBundle&gt;</span>
+    <span class="tag">&lt;apiVersion&gt;</span>59.0<span class="tag">&lt;/apiVersion&gt;</span>
+    <span class="tag">&lt;isExposed&gt;</span>true<span class="tag">&lt;/isExposed&gt;</span>
+    <span class="tag">&lt;targets&gt;</span>
+        <span class="tag">&lt;target&gt;</span>lightningCommunity__Page<span class="tag">&lt;/target&gt;</span>
+        <span class="tag">&lt;target&gt;</span>lightningCommunity__Default<span class="tag">&lt;/target&gt;</span>
+    <span class="tag">&lt;/targets&gt;</span>
+    <span class="tag">&lt;targetConfigs&gt;</span>
+        <span class="tag">&lt;targetConfig</span> <span class="attr">targets</span>=<span class="str">"lightningCommunity__Default"</span><span class="tag">&gt;</span>
+            <span class="tag">&lt;property</span> <span class="attr">name</span>=<span class="str">"backgroundColor"</span> <span class="attr">type</span>=<span class="str">"String"</span> <span class="attr">default</span>=<span class="str">"#FFFFFF"</span><span class="tag">/&gt;</span>
+        <span class="tag">&lt;/targetConfig&gt;</span>
+    <span class="tag">&lt;/targetConfigs&gt;</span>
+<span class="tag">&lt;/LightningComponentBundle&gt;</span>`
+      },
+      {
+        q: "Can we call a Lightning Flow inside LWC?",
+        a: "Yes, using the <strong>lightning-flow</strong> base component. Pass the Flow API name and input variables. Listen to the <strong>onstatuschange</strong> event to detect when the flow finishes.",
+        code: `<span class="cmt">&lt;!-- flowComponent.html --&gt;</span>
+<span class="tag">&lt;lightning-flow</span>
+    <span class="attr">flow-api-name</span>={flowName}
+    <span class="attr">input-variables</span>={inputVariables}
+    <span class="attr">onstatuschange</span>={handleFlowStatus}<span class="tag">&gt;</span>
+<span class="tag">&lt;/lightning-flow&gt;</span>
+
+<span class="cmt">// flowComponent.js</span>
+<span class="kw">export default class</span> <span class="cls">FlowComponent</span> <span class="kw">extends</span> <span class="cls">LightningElement</span> {
+    <span class="dec">@api</span> recordId;
+    flowName = <span class="str">'Account_Onboarding_Flow'</span>;
+
+    <span class="fn">get</span> inputVariables() {
+        <span class="kw">return</span> [{ name: <span class="str">'recordId'</span>, type: <span class="str">'String'</span>, value: <span class="kw">this</span>.recordId }];
+    }
+
+    <span class="fn">handleFlowStatus</span>(event) {
+        <span class="kw">if</span> (event.detail.status === <span class="str">'FINISHED'</span>) {
+            console.<span class="fn">log</span>(<span class="str">'Flow completed'</span>, event.detail.outputVariables);
+        }
+    }
+}`
+      },
+      {
+        q: "Can we call LWC inside a Flow?",
+        a: "Yes. Add <strong>lightning__FlowScreen</strong> as a target in meta.xml. The component becomes available as a Screen Component in Flow Builder. You can also implement <strong>@api validate()</strong> for Flow to call before proceeding.",
+        code: `<span class="cmt">&lt;!-- meta.xml --&gt;</span>
+<span class="tag">&lt;targets&gt;</span>
+    <span class="tag">&lt;target&gt;</span>lightning__FlowScreen<span class="tag">&lt;/target&gt;</span>
+<span class="tag">&lt;/targets&gt;</span>
+
+<span class="cmt">// myFlowScreen.js</span>
+<span class="kw">export default class</span> <span class="cls">MyFlowScreen</span> <span class="kw">extends</span> <span class="cls">LightningElement</span> {
+    <span class="dec">@api</span> inputValue;  <span class="cmt">// Input from Flow</span>
+    <span class="dec">@api</span> outputValue; <span class="cmt">// Output to Flow</span>
+
+    <span class="cmt">// Flow calls this before proceeding to next screen</span>
+    <span class="dec">@api</span>
+    <span class="fn">validate</span>() {
+        <span class="kw">const</span> isValid = <span class="kw">this</span>.inputValue?.length > <span class="num">0</span>;
+        <span class="kw">return</span> { isValid, errorMessage: isValid ? <span class="str">''</span> : <span class="str">'Input required'</span> };
+    }
+
+    <span class="fn">handleInputChange</span>(event) {
+        <span class="kw">this</span>.inputValue = event.target.value;
+        <span class="kw">this</span>.outputValue = <span class="kw">this</span>.inputValue; <span class="cmt">// Notify Flow</span>
+    }
+}`
+      },
+      {
+        q: "How do you pass data from LWC to Aura?",
+        a: "LWC <strong>dispatches a CustomEvent</strong> with <strong>bubbles: true</strong> and <strong>composed: true</strong>. The Aura parent component listens using the <strong>on[eventname]</strong> attribute and handles it in the controller with <strong>event.getParam('detail')</strong>.",
+        code: `<span class="cmt">// lwcComponent.js</span>
+<span class="fn">sendToAura</span>() {
+    <span class="kw">this</span>.<span class="fn">dispatchEvent</span>(<span class="kw">new</span> <span class="cls">CustomEvent</span>(<span class="str">'datatransfer'</span>, {
+        detail: { message: <span class="str">'Hello from LWC'</span>, data: { id: <span class="num">123</span> } },
+        bubbles: <span class="kw">true</span>, composed: <span class="kw">true</span>  <span class="cmt">// Required for Aura to receive</span>
+    }));
+}
+
+<span class="cmt">&lt;!-- auraParent.cmp --&gt;</span>
+<span class="tag">&lt;c:lwcComponent</span> <span class="attr">ondatatransfer</span>=<span class="str">"{!c.handleDataFromLWC}"</span><span class="tag">/&gt;</span>
+
+<span class="cmt">// auraParentController.js</span>
+<span class="fn">handleDataFromLWC</span>: <span class="kw">function</span>(component, event, helper) {
+    <span class="kw">const</span> detail = event.<span class="fn">getParam</span>(<span class="str">'detail'</span>);
+    component.<span class="fn">set</span>(<span class="str">'v.messageFromLWC'</span>, detail.message);
+    component.<span class="fn">set</span>(<span class="str">'v.receivedData'</span>, detail.data);
+}`
+      },
+      {
+        q: "Why is LWC faster than Aura?",
+        a: "LWC is a <strong>thin wrapper over native web standards</strong>. The browser engine handles rendering, event system, and DOM diffing natively — eliminating the need for a heavy custom JavaScript framework like Aura's.",
+        code: `<span class="cmt">// AURA - Framework manages everything in JavaScript:
+// Custom rendering engine + manual value providers
+// + Custom event system + Framework data binding
+// = 1000s of lines of framework overhead per component</span>
+
+<span class="cmt">// LWC - Browser handles natively:
+// Shadow DOM for encapsulation
+// Custom Elements for component model
+// Native event system
+// Browser-optimized rendering engine</span>
+
+<span class="kw">import</span> { LightningElement } <span class="kw">from</span> <span class="str">'lwc'</span>;
+<span class="kw">export default class</span> <span class="cls">LwcFast</span> <span class="kw">extends</span> <span class="cls">LightningElement</span> {
+    count = <span class="num">0</span>;
+    <span class="fn">increment</span>() { <span class="kw">this</span>.count++; } <span class="cmt">// Browser handles reactivity natively</span>
+}
+<span class="cmt">// Aura: JS Framework → Parse → Validate → Render → Diff → Patch
+// LWC:  Browser Engine → Parse → Native Render (much faster)</span>`
+      },
+      {
+        q: "Can we reuse CSS across components?",
+        a: "Yes. Create a <strong>CSS-only LWC module</strong> (only .css and meta.xml, no .html or .js). Other components import it using the CSS <strong>@import</strong> directive.",
+        code: `<span class="cmt">/* sharedStyles/sharedStyles.css (CSS-only module) */</span>
+.shared-card {
+    border-radius: 0.5rem;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    padding: 1rem;
+}
+.error-text { color: #ea001e; font-size: 0.75rem; }
+.success-badge { background-color: #4bca81; color: white; }
+
+<span class="cmt">/* componentA.css - imports shared styles */</span>
+@import <span class="str">'c/sharedStyles'</span>;
+
+.component-a-specific {
+    background-color: #f8f9fa;
+}
+
+<span class="cmt">/* componentB.css - also imports shared styles */</span>
+@import <span class="str">'c/sharedStyles'</span>;
+
+.component-b-specific {
+    border: 1px solid #d8dde6;
+}`
+      },
+      {
+        q: "How do you control button visibility based on permissions?",
+        a: "Import permissions using <strong>@salesforce/userPermission/PermissionName</strong> or get object-level CRUD permissions via <strong>@wire(getObjectInfo)</strong>. Use these in getter methods and bind to <strong>if:true</strong> in HTML.",
+        code: `<span class="kw">import</span> { LightningElement, wire } <span class="kw">from</span> <span class="str">'lwc'</span>;
+<span class="kw">import</span> { getObjectInfo } <span class="kw">from</span> <span class="str">'lightning/uiObjectInfoApi'</span>;
+<span class="kw">import</span> hasDeletePermission <span class="kw">from</span> <span class="str">'@salesforce/userPermission/DeleteAuditFields'</span>;
+<span class="kw">import</span> customPerm <span class="kw">from</span> <span class="str">'@salesforce/customPermission/Manage_Advanced_Settings'</span>;
+
+<span class="kw">export default class</span> <span class="cls">PermissionBasedComponent</span> <span class="kw">extends</span> <span class="cls">LightningElement</span> {
+    canCreateAccount = <span class="kw">false</span>;
+
+    <span class="dec">@wire</span>(getObjectInfo, { objectApiName: <span class="str">'Account'</span> })
+    <span class="fn">accountInfo</span>({ data }) {
+        <span class="kw">if</span> (data) <span class="kw">this</span>.canCreateAccount = data.createable;
+    }
+
+    <span class="fn">get</span> canDelete() { <span class="kw">return</span> hasDeletePermission; }
+    <span class="fn">get</span> hasCustomPermission() { <span class="kw">return</span> customPerm; }
+}
+
+<span class="cmt">&lt;!-- HTML --&gt;</span>
+<span class="tag">&lt;button</span> <span class="attr">if:true</span>={canCreateAccount}<span class="tag">&gt;</span>New Account<span class="tag">&lt;/button&gt;</span>
+<span class="tag">&lt;button</span> <span class="attr">if:true</span>={canDelete}<span class="tag">&gt;</span>Delete Audit Trail<span class="tag">&lt;/button&gt;</span>
+<span class="tag">&lt;button</span> <span class="attr">if:true</span>={hasCustomPermission}<span class="tag">&gt;</span>Advanced Settings<span class="tag">&lt;/button&gt;</span>`
+      },
+      {
+        q: "Can LMS support two-way communication?",
+        a: "Yes. LMS follows the Publisher/Subscriber model where <strong>any component can be both a publisher and a subscriber</strong> on the same channel. This enables true bidirectional data flow across the application.",
+        code: `<span class="cmt">// twoWayComponentA.js - BOTH publisher AND subscriber</span>
+<span class="kw">import</span> { publish, subscribe, unsubscribe, MessageContext } <span class="kw">from</span> <span class="str">'lightning/messageService'</span>;
+<span class="kw">import</span> TWO_WAY_CHANNEL <span class="kw">from</span> <span class="str">'@salesforce/messageChannel/TwoWayChannel__c'</span>;
+
+<span class="kw">export default class</span> <span class="cls">TwoWayComponentA</span> <span class="kw">extends</span> <span class="cls">LightningElement</span> {
+    <span class="dec">@wire</span>(MessageContext) messageContext;
+    subscription;
+
+    <span class="fn">connectedCallback</span>() {
+        <span class="kw">this</span>.subscription = <span class="fn">subscribe</span>(
+            <span class="kw">this</span>.messageContext, TWO_WAY_CHANNEL,
+            (msg) => <span class="kw">this</span>.<span class="fn">handleIncomingMessage</span>(msg)
+        );
+    }
+    <span class="fn">disconnectedCallback</span>() { <span class="fn">unsubscribe</span>(<span class="kw">this</span>.subscription); }
+
+    <span class="fn">publishMessage</span>() { <span class="cmt">// PUBLISH</span>
+        <span class="fn">publish</span>(<span class="kw">this</span>.messageContext, TWO_WAY_CHANNEL, {
+            payload: <span class="kw">this</span>.outgoingMessage, senderId: <span class="str">'ComponentA'</span>
+        });
+    }
+
+    <span class="fn">handleIncomingMessage</span>(message) { <span class="cmt">// SUBSCRIBE + auto-respond</span>
+        <span class="kw">if</span> (message.payload === <span class="str">'ping'</span>) {
+            <span class="fn">publish</span>(<span class="kw">this</span>.messageContext, TWO_WAY_CHANNEL, { payload: <span class="str">'pong'</span> });
+        }
+    }
+}`
+      },
+      {
+        q: "Can we use managed package LWC inside custom LWC?",
+        a: "Yes. Use the <strong>namespace prefix</strong> in the HTML tag. For example, if the managed package namespace is <em>exp</em>, you use <strong>&lt;exp:componentName&gt;</strong> instead of the usual c: prefix.",
+        code: `<span class="cmt">&lt;!-- customComponent.html --&gt;</span>
+<span class="tag">&lt;template&gt;</span>
+    <span class="cmt">&lt;!-- Using managed package component (namespace: exp) --&gt;</span>
+    <span class="tag">&lt;exp:advancedChart</span>
+        <span class="attr">data</span>={chartData}
+        <span class="attr">type</span>=<span class="str">"bar"</span>
+        <span class="attr">onchartclick</span>={handleChartClick}<span class="tag">&gt;</span>
+    <span class="tag">&lt;/exp:advancedChart&gt;</span>
+
+    <span class="tag">&lt;exp:dataTable</span>
+        <span class="attr">records</span>={records}
+        <span class="attr">columns</span>={columns}<span class="tag">&gt;</span>
+    <span class="tag">&lt;/exp:dataTable&gt;</span>
+<span class="tag">&lt;/template&gt;</span>
+
+<span class="cmt">// customComponent.js</span>
+<span class="kw">export default class</span> <span class="cls">CustomComponent</span> <span class="kw">extends</span> <span class="cls">LightningElement</span> {
+    chartData = { labels: [<span class="str">'Jan'</span>, <span class="str">'Feb'</span>], values: [<span class="num">100</span>, <span class="num">200</span>] };
+    <span class="fn">handleChartClick</span>(event) { console.<span class="fn">log</span>(event.detail); }
+}`
+      },
+      {
+        q: "Event bubbling vs capturing in LWC",
+        a: "<strong>Bubbling</strong> (default) — event travels from child → parent → grandparent. Most events use this.<br><strong>Capturing</strong> — event travels from root → parent → child. Less common, set with addEventListener's third param as true.",
+        code: `<span class="cmt">// BUBBLING (default) - child to parent</span>
+<span class="cmt">// Click button → "Child" → "Parent" → "Grandparent"</span>
+
+<span class="cmt">// CAPTURING - parent to child</span>
+element.<span class="fn">addEventListener</span>(<span class="str">'click'</span>, handler, <span class="kw">true</span>); <span class="cmt">// 3rd arg = true</span>
+<span class="cmt">// Click button → "Grandparent" → "Parent" → "Child"</span>
+
+<span class="cmt">// LWC example</span>
+<span class="cmt">&lt;!-- parent.html - catches all clicks from child or self --&gt;</span>
+<span class="tag">&lt;div</span> <span class="attr">onclick</span>={handleParentClick}<span class="tag">&gt;</span>
+    <span class="tag">&lt;c-child-component&gt;&lt;/c-child-component&gt;</span>
+<span class="tag">&lt;/div&gt;</span>
+
+<span class="cmt">// stopPropagation prevents event from bubbling further</span>
+<span class="fn">handleChildClick</span>(event) {
+    event.<span class="fn">stopPropagation</span>(); <span class="cmt">// Parent won't fire</span>
+}
+<span class="cmt">// preventDefault stops the browser default action (e.g., form submit)</span>
+<span class="fn">handleFormSubmit</span>(event) {
+    event.<span class="fn">preventDefault</span>(); <span class="cmt">// No page reload</span>
+}`
+      }
+    ],
+    scenario: [
+      {
+        q: "Scenario: A user types in a search bar that calls an Apex method on every keystroke. How do you prevent excessive server calls?",
+        a: "Use <strong>Debouncing</strong>. Wrap the Apex call logic in a <strong>setTimeout</strong> and clear it on each keystroke using <strong>clearTimeout</strong>. The Apex method only fires after the user stops typing for the specified delay (e.g., 300ms).",
+        code: `<span class="kw">export default class</span> <span class="cls">SearchComponent</span> <span class="kw">extends</span> <span class="cls">LightningElement</span> {
+    delayTimeout;
+    searchQuery = <span class="str">''</span>;
+
+    <span class="fn">handleSearch</span>(event) {
+        <span class="kw">const</span> searchKey = event.target.value;
+
+        <span class="cmt">// Clear any existing timeout</span>
+        window.<span class="fn">clearTimeout</span>(<span class="kw">this</span>.delayTimeout);
+
+        <span class="cmt">// Set a new timeout — fires only if user stops typing for 300ms</span>
+        <span class="kw">this</span>.delayTimeout = setTimeout(() => {
+            <span class="kw">this</span>.searchQuery = searchKey;
+            <span class="cmt">// Call your Apex method here</span>
+        }, <span class="num">300</span>);
+    }
+}`
+      },
+      {
+        q: "Scenario: You updated a record using imperative Apex, but the @wire property shows old data. How do you fix this?",
+        a: "The @wire cache is not aware of the imperative update. Import <strong>refreshApex</strong> and call it with the <strong>entire wired result object</strong> (not just .data). This bypasses the client-side cache and re-fetches from the server.",
+        code: `<span class="kw">import</span> { LightningElement, wire } <span class="kw">from</span> <span class="str">'lwc'</span>;
+<span class="kw">import</span> { refreshApex } <span class="kw">from</span> <span class="str">'@salesforce/apex'</span>;
+<span class="kw">import</span> getContacts <span class="kw">from</span> <span class="str">'@salesforce/apex/ContactController.getContacts'</span>;
+<span class="kw">import</span> updateContact <span class="kw">from</span> <span class="str">'@salesforce/apex/ContactController.updateContact'</span>;
+
+<span class="kw">export default class</span> <span class="cls">StaleDataFix</span> <span class="kw">extends</span> <span class="cls">LightningElement</span> {
+    wiredContactResult; <span class="cmt">// Store entire result, not just data</span>
+
+    <span class="dec">@wire</span>(getContacts)
+    <span class="fn">wiredContacts</span>(result) {
+        <span class="kw">this</span>.wiredContactResult = result; <span class="cmt">// Must store full {data, error}</span>
+    }
+
+    <span class="kw">async</span> <span class="fn">handleUpdate</span>() {
+        <span class="kw">await</span> <span class="fn">updateContact</span>({ id: <span class="kw">this</span>.recordId }); <span class="cmt">// Imperative DML</span>
+        <span class="kw">return</span> <span class="fn">refreshApex</span>(<span class="kw">this</span>.wiredContactResult); <span class="cmt">// Force wire to re-fetch</span>
+    }
+}`
+      },
+      {
+        q: "Scenario: You update this.user.name = 'Doe' but the UI doesn't re-render. Why and how do you fix it?",
+        a: "LWC tracks the <strong>object reference</strong>, not the internal properties. Mutating a property inside an object does not change the reference, so no re-render is triggered. Fix: use the <strong>spread operator</strong> to create a new object reference.",
+        code: `<span class="kw">export default class</span> <span class="cls">DeepReactivity</span> <span class="kw">extends</span> <span class="cls">LightningElement</span> {
+    user = { name: <span class="str">'John'</span>, age: <span class="num">30</span> };
+
+    <span class="fn">updateName</span>() {
+        <span class="cmt">// ❌ WRONG - mutates property, no re-render</span>
+        <span class="kw">this</span>.user.name = <span class="str">'Doe'</span>;
+
+        <span class="cmt">// ✅ CORRECT - creates new reference → triggers re-render</span>
+        <span class="kw">this</span>.user = { ...<span class="kw">this</span>.user, name: <span class="str">'Doe'</span> };
+    }
+
+    <span class="fn">addItemToArray</span>() {
+        <span class="cmt">// ❌ WRONG - push() mutates, no re-render</span>
+        <span class="kw">this</span>.items.<span class="fn">push</span>(<span class="str">'newItem'</span>);
+
+        <span class="cmt">// ✅ CORRECT - spread creates new array reference</span>
+        <span class="kw">this</span>.items = [...<span class="kw">this</span>.items, <span class="str">'newItem'</span>];
+    }
+}`
+      },
+      {
+        q: "Scenario: Why should you never update a reactive property inside renderedCallback without a guard?",
+        a: "<strong>renderedCallback()</strong> fires after every render. Updating a reactive property inside it triggers another render, which calls renderedCallback() again — creating an <strong>infinite loop</strong>. Always use a boolean flag to prevent this.",
+        code: `<span class="kw">export default class</span> <span class="cls">RenderedCallbackGuard</span> <span class="kw">extends</span> <span class="cls">LightningElement</span> {
+    isInitialized = <span class="kw">false</span>; <span class="cmt">// Guard flag</span>
+    chartTitle = <span class="str">''</span>;
+
+    <span class="fn">renderedCallback</span>() {
+        <span class="cmt">// ❌ WRONG - triggers infinite loop</span>
+        <span class="cmt">// this.chartTitle = 'Updated'; // Updates prop → re-render → re-runs</span>
+
+        <span class="cmt">// ✅ CORRECT - guard prevents infinite loop</span>
+        <span class="kw">if</span> (<span class="kw">this</span>.isInitialized) <span class="kw">return</span>;
+        <span class="kw">this</span>.isInitialized = <span class="kw">true</span>;
+
+        <span class="kw">this</span>.chartTitle = <span class="str">'Chart Ready'</span>; <span class="cmt">// Runs only once</span>
+        <span class="cmt">// Initialize third-party library here</span>
+    }
+}`
+      },
+      {
+        q: "Scenario: Apply a consistent corporate brand style across 20 different LWCs without duplicating CSS code.",
+        a: "Create a <strong>CSS-only LWC module</strong> (folder with only .css and meta.xml). All 20 components then <strong>@import</strong> it. Any update to the shared module instantly propagates to all components.",
+        code: `<span class="cmt">/* c/brandStyles/brandStyles.css (CSS-only module) */</span>
+.brand-button {
+    background: #0052cc;
+    color: white;
+    border-radius: 4px;
+    padding: 8px 16px;
+}
+.brand-header {
+    font-family: 'Salesforce Sans', sans-serif;
+    color: #032d60;
+}
+.brand-card {
+    border-left: 4px solid #0052cc;
+    padding: 1rem;
+}
+
+<span class="cmt">/* componentA.css */</span>
+@import <span class="str">'c/brandStyles'</span>; <span class="cmt">/* All 20 components use this line */</span>
+
+.component-a-layout { display: grid; grid-template-columns: 1fr 2fr; }
+
+<span class="cmt">/* componentB.css */</span>
+@import <span class="str">'c/brandStyles'</span>;
+.component-b-layout { flex-direction: column; }`
+      },
+      {
+        q: "Scenario: You need to initialize Chart.js in LWC. What hook do you use and how do you prevent it from re-initializing?",
+        a: "Load it in <strong>renderedCallback()</strong> using <strong>loadScript()</strong>. Use a private <strong>isChartInitialized</strong> boolean flag to ensure the library only loads once, since renderedCallback fires on every re-render.",
+        code: `<span class="kw">import</span> { LightningElement } <span class="kw">from</span> <span class="str">'lwc'</span>;
+<span class="kw">import</span> { loadScript } <span class="kw">from</span> <span class="str">'lightning/platformResourceLoader'</span>;
+<span class="kw">import</span> chartJS <span class="kw">from</span> <span class="str">'@salesforce/resourceUrl/chartjs'</span>;
+
+<span class="kw">export default class</span> <span class="cls">ChartDemo</span> <span class="kw">extends</span> <span class="cls">LightningElement</span> {
+    isChartInitialized = <span class="kw">false</span>; <span class="cmt">// Prevents re-initialization</span>
+
+    <span class="fn">renderedCallback</span>() {
+        <span class="kw">if</span> (<span class="kw">this</span>.isChartInitialized) <span class="kw">return</span>; <span class="cmt">// Guard</span>
+        <span class="kw">this</span>.isChartInitialized = <span class="kw">true</span>;
+
+        <span class="fn">loadScript</span>(<span class="kw">this</span>, chartJS)
+            .<span class="fn">then</span>(() => {
+                <span class="kw">const</span> canvas = <span class="kw">this</span>.template.<span class="fn">querySelector</span>(<span class="str">'canvas'</span>);
+                <span class="kw">new</span> <span class="cls">Chart</span>(canvas.<span class="fn">getContext</span>(<span class="str">'2d'</span>), {
+                    type: <span class="str">'bar'</span>,
+                    data: { labels: [<span class="str">'Q1'</span>, <span class="str">'Q2'</span>], datasets: [{ data: [100, 200] }] }
+                });
+            });
+    }
+}`
+      },
+      {
+        q: "Scenario: A Header LWC needs to update when a Total Price is calculated in a Footer LWC (no parent-child relationship). How?",
+        a: "Use <strong>Lightning Message Service (LMS)</strong>. The Footer publishes a message on a shared Message Channel. The Header subscribes to the same channel and updates its UI when a message arrives.",
+        code: `<span class="cmt">// footerComponent.js (Publisher)</span>
+<span class="kw">import</span> { publish, MessageContext } <span class="kw">from</span> <span class="str">'lightning/messageService'</span>;
+<span class="kw">import</span> PRICE_CHANNEL <span class="kw">from</span> <span class="str">'@salesforce/messageChannel/PriceChannel__c'</span>;
+<span class="dec">@wire</span>(MessageContext) messageContext;
+
+<span class="fn">calculateTotal</span>() {
+    <span class="kw">const</span> total = <span class="kw">this</span>.items.<span class="fn">reduce</span>((sum, item) => sum + item.price, <span class="num">0</span>);
+    <span class="fn">publish</span>(<span class="kw">this</span>.messageContext, PRICE_CHANNEL, { totalPrice: total });
+}
+
+<span class="cmt">// headerComponent.js (Subscriber)</span>
+<span class="kw">import</span> { subscribe, unsubscribe, MessageContext } <span class="kw">from</span> <span class="str">'lightning/messageService'</span>;
+<span class="kw">import</span> PRICE_CHANNEL <span class="kw">from</span> <span class="str">'@salesforce/messageChannel/PriceChannel__c'</span>;
+<span class="dec">@wire</span>(MessageContext) messageContext;
+subscription; totalPrice = <span class="num">0</span>;
+
+<span class="fn">connectedCallback</span>() {
+    <span class="kw">this</span>.subscription = <span class="fn">subscribe</span>(
+        <span class="kw">this</span>.messageContext, PRICE_CHANNEL,
+        (msg) => { <span class="kw">this</span>.totalPrice = msg.totalPrice; }
+    );
+}
+<span class="fn">disconnectedCallback</span>() { <span class="fn">unsubscribe</span>(<span class="kw">this</span>.subscription); }`
+      },
+      {
+        q: "Scenario: You added a global window event listener in connectedCallback. What problem can this cause and how do you fix it?",
+        a: "If the component is <strong>destroyed, the listener stays in memory</strong> — causing a <strong>memory leak</strong>. The handler still fires even though the component no longer exists. Fix: remove the listener in <strong>disconnectedCallback()</strong>.",
+        code: `<span class="kw">export default class</span> <span class="cls">MemoryLeakFix</span> <span class="kw">extends</span> <span class="cls">LightningElement</span> {
+    <span class="cmt">// Store reference to the handler — needed for removeEventListener</span>
+    boundHandleResize = <span class="kw">this</span>.handleResize.<span class="fn">bind</span>(<span class="kw">this</span>);
+
+    <span class="fn">connectedCallback</span>() {
+        <span class="cmt">// ✅ Store reference so we can remove it later</span>
+        window.<span class="fn">addEventListener</span>(<span class="str">'resize'</span>, <span class="kw">this</span>.boundHandleResize);
+    }
+
+    <span class="fn">disconnectedCallback</span>() {
+        <span class="cmt">// ✅ Remove when component is destroyed - prevents memory leak</span>
+        window.<span class="fn">removeEventListener</span>(<span class="str">'resize'</span>, <span class="kw">this</span>.boundHandleResize);
+    }
+
+    <span class="fn">handleResize</span>() {
+        console.<span class="fn">log</span>(<span class="str">'Window resized'</span>);
+    }
+}`
+      },
+      {
+        q: "Scenario: How would you show a progress bar for a long-running Batch Apex job?",
+        a: "Use <strong>setTimeout</strong> to call an <strong>imperative Apex method every 5 seconds</strong> that queries the <strong>AsyncApexJob</strong> object. Update the progress bar based on JobItemsProcessed / TotalJobItems. Stop polling when status is 'Completed'.",
+        code: `<span class="kw">import</span> { LightningElement } <span class="kw">from</span> <span class="str">'lwc'</span>;
+<span class="kw">import</span> getBatchStatus <span class="kw">from</span> <span class="str">'@salesforce/apex/BatchMonitor.getBatchStatus'</span>;
+
+<span class="kw">export default class</span> <span class="cls">BatchProgress</span> <span class="kw">extends</span> <span class="cls">LightningElement</span> {
+    progress = <span class="num">0</span>;
+    pollingTimer;
+    <span class="dec">@api</span> jobId;
+
+    <span class="fn">connectedCallback</span>() { <span class="kw">this</span>.<span class="fn">startPolling</span>(); }
+
+    <span class="fn">startPolling</span>() {
+        <span class="kw">this</span>.pollingTimer = setInterval(() => {
+            <span class="fn">getBatchStatus</span>({ jobId: <span class="kw">this</span>.jobId })
+                .<span class="fn">then</span>(job => {
+                    <span class="kw">if</span> (job.TotalJobItems > <span class="num">0</span>) {
+                        <span class="kw">this</span>.progress = Math.<span class="fn">round</span>(
+                            (job.JobItemsProcessed / job.TotalJobItems) * <span class="num">100</span>
+                        );
+                    }
+                    <span class="kw">if</span> (job.Status === <span class="str">'Completed'</span> || job.Status === <span class="str">'Failed'</span>) {
+                        clearInterval(<span class="kw">this</span>.pollingTimer); <span class="cmt">// Stop polling</span>
+                    }
+                });
+        }, <span class="num">5000</span>); <span class="cmt">// Poll every 5 seconds</span>
+    }
+
+    <span class="fn">disconnectedCallback</span>() { clearInterval(<span class="kw">this</span>.pollingTimer); }
+}`
+      },
+      {
+        q: "Scenario: How do you prevent a user from closing a tab if they have unsaved changes?",
+        a: "Use the <strong>beforeunload</strong> window event listener in <strong>connectedCallback()</strong>. Set <strong>event.preventDefault()</strong> and <strong>event.returnValue</strong> to show a native browser confirmation dialog.",
+        code: `<span class="kw">export default class</span> <span class="cls">UnsavedChangesGuard</span> <span class="kw">extends</span> <span class="cls">LightningElement</span> {
+    hasUnsavedChanges = <span class="kw">false</span>;
+    boundBeforeUnload = <span class="kw">this</span>.handleBeforeUnload.<span class="fn">bind</span>(<span class="kw">this</span>);
+
+    <span class="fn">connectedCallback</span>() {
+        window.<span class="fn">addEventListener</span>(<span class="str">'beforeunload'</span>, <span class="kw">this</span>.boundBeforeUnload);
+    }
+
+    <span class="fn">disconnectedCallback</span>() {
+        window.<span class="fn">removeEventListener</span>(<span class="str">'beforeunload'</span>, <span class="kw">this</span>.boundBeforeUnload);
+    }
+
+    <span class="fn">handleBeforeUnload</span>(event) {
+        <span class="kw">if</span> (<span class="kw">this</span>.hasUnsavedChanges) {
+            event.<span class="fn">preventDefault</span>();
+            event.returnValue = <span class="str">''</span>; <span class="cmt">// Shows native browser "Leave page?" dialog</span>
+        }
+    }
+
+    <span class="fn">handleFormChange</span>() {
+        <span class="kw">this</span>.hasUnsavedChanges = <span class="kw">true</span>; <span class="cmt">// Set when user edits</span>
+    }
+
+    <span class="fn">handleSave</span>() {
+        <span class="kw">this</span>.hasUnsavedChanges = <span class="kw">false</span>; <span class="cmt">// Clear after save</span>
+    }
+}`
+      },
+      {
+        q: "Scenario: How do you show a custom image/icon inside a standard lightning-datatable cell?",
+        a: "Use a <strong>Custom Data Type</strong>. Create a separate LWC for the cell renderer and map it in the <strong>customTypes</strong> property of the lightning-datatable configuration. The cell LWC receives the row data via <strong>@api value</strong>.",
+        code: `<span class="cmt">// imageCell.js (Cell Renderer Component)</span>
+<span class="kw">import</span> { LightningElement, api } <span class="kw">from</span> <span class="str">'lwc'</span>;
+<span class="kw">export default class</span> <span class="cls">ImageCell</span> <span class="kw">extends</span> <span class="cls">LightningElement</span> {
+    <span class="dec">@api</span> value; <span class="cmt">// Receives cell value from datatable</span>
+}
+
+<span class="cmt">&lt;!-- imageCell.html --&gt;</span>
+<span class="tag">&lt;template&gt;</span>
+    <span class="tag">&lt;img</span> <span class="attr">src</span>={value} <span class="attr">alt</span>=<span class="str">"row image"</span> <span class="attr">style</span>=<span class="str">"width:40px;height:40px;border-radius:50%"</span><span class="tag">/&gt;</span>
+<span class="tag">&lt;/template&gt;</span>
+
+<span class="cmt">// parentComponent.js - register custom type</span>
+columns = [
+    { label: <span class="str">'Name'</span>, fieldName: <span class="str">'Name'</span> },
+    {
+        label: <span class="str">'Photo'</span>,
+        fieldName: <span class="str">'PhotoUrl__c'</span>,
+        type: <span class="str">'customImage'</span>     <span class="cmt">// Custom type name</span>
+    }
+];
+customTypes = {
+    customImage: {             <span class="cmt">// Maps type to your LWC</span>
+        template: <span class="str">'c-image-cell'</span>
+    }
+};`
+      },
+      {
+        q: "Scenario: Implement inline editing in lightning-datatable with bulk save via Apex.",
+        a: "Enable <strong>editable: true</strong> on specific columns. Handle the <strong>onsave</strong> event which provides <strong>event.detail.draftValues</strong> — pass these to Apex for a bulk update. Reset <strong>draftValues</strong> to [] after a successful save to clear the yellow highlights.",
+        code: `<span class="cmt">&lt;!-- HTML --&gt;</span>
+<span class="tag">&lt;lightning-datatable</span>
+    <span class="attr">key-field</span>=<span class="str">"Id"</span>
+    <span class="attr">data</span>={accounts}
+    <span class="attr">columns</span>={columns}
+    <span class="attr">onsave</span>={handleSave}
+    <span class="attr">draft-values</span>={draftValues}<span class="tag">&gt;</span>
+<span class="tag">&lt;/lightning-datatable&gt;</span>
+
+<span class="cmt">// JS</span>
+<span class="kw">import</span> { LightningElement, track } <span class="kw">from</span> <span class="str">'lwc'</span>;
+<span class="kw">import</span> updateAccounts <span class="kw">from</span> <span class="str">'@salesforce/apex/AccountController.updateAccounts'</span>;
+
+<span class="kw">export default class</span> <span class="cls">AccountTable</span> <span class="kw">extends</span> <span class="cls">LightningElement</span> {
+    <span class="dec">@track</span> draftValues = [];
+    columns = [
+        { label: <span class="str">'Name'</span>, fieldName: <span class="str">'Name'</span>, editable: <span class="kw">true</span> },
+        { label: <span class="str">'Industry'</span>, fieldName: <span class="str">'Industry'</span>, editable: <span class="kw">true</span> }
+    ];
+
+    <span class="fn">handleSave</span>(event) {
+        <span class="kw">const</span> updatedFields = event.detail.draftValues;
+        <span class="fn">updateAccounts</span>({ data: updatedFields })
+            .<span class="fn">then</span>(() => {
+                <span class="kw">this</span>.draftValues = []; <span class="cmt">// Clear yellow highlights on success</span>
+            })
+            .<span class="fn">catch</span>(error => { <span class="cmt">/* handle error */</span> });
+    }
+}`
+      },
+      {
+        q: "Scenario: Display 10,000 records in a datatable loading only 20 at a time as the user scrolls. How do you implement this?",
+        a: "Use <strong>enable-infinite-loading</strong> and the <strong>onloadmore</strong> event. Wrap datatable in a fixed-height div. In <strong>loadMoreData()</strong>, increment an offset, call Apex with LIMIT+OFFSET, append results using spread operator. Set <strong>event.target.isLoading = true</strong> to show the spinner.",
+        code: `<span class="cmt">&lt;!-- HTML - fixed height container is required --&gt;</span>
+<span class="tag">&lt;div</span> <span class="attr">style</span>=<span class="str">"height: 400px;"</span><span class="tag">&gt;</span>
+    <span class="tag">&lt;lightning-datatable</span>
+        <span class="attr">key-field</span>=<span class="str">"Id"</span>
+        <span class="attr">data</span>={data}
+        <span class="attr">columns</span>={columns}
+        <span class="attr">enable-infinite-loading</span>
+        <span class="attr">onloadmore</span>={loadMoreData}<span class="tag">&gt;</span>
+    <span class="tag">&lt;/lightning-datatable&gt;</span>
+<span class="tag">&lt;/div&gt;</span>
+
+<span class="cmt">// JS</span>
+<span class="kw">import</span> getAccounts <span class="kw">from</span> <span class="str">'@salesforce/apex/AccountController.getAccounts'</span>;
+
+<span class="kw">export default class</span> <span class="cls">LazyTable</span> <span class="kw">extends</span> <span class="cls">LightningElement</span> {
+    data = [];
+    rowLimit = <span class="num">20</span>;
+    rowOffset = <span class="num">0</span>;
+
+    <span class="fn">connectedCallback</span>() { <span class="kw">this</span>.<span class="fn">loadData</span>(); }
+
+    <span class="kw">async</span> <span class="fn">loadData</span>() {
+        <span class="kw">const</span> result = <span class="kw">await</span> <span class="fn">getAccounts</span>({
+            limitSize: <span class="kw">this</span>.rowLimit, offset: <span class="kw">this</span>.rowOffset
+        });
+        <span class="kw">this</span>.data = [...<span class="kw">this</span>.data, ...result]; <span class="cmt">// Append (spread!)</span>
+    }
+
+    <span class="fn">loadMoreData</span>(event) {
+        <span class="kw">const</span> target = event.target;
+        target.isLoading = <span class="kw">true</span>; <span class="cmt">// Show built-in spinner</span>
+        <span class="kw">this</span>.rowOffset += <span class="kw">this</span>.rowLimit;
+        <span class="kw">this</span>.<span class="fn">loadData</span>().<span class="fn">then</span>(() => { target.isLoading = <span class="kw">false</span>; });
+    }
+}
+
+<span class="cmt">// Apex - uses LIMIT and OFFSET for pagination</span>
+<span class="dec">@AuraEnabled(cacheable=true)</span>
+<span class="kw">public static</span> List&lt;Account&gt; <span class="fn">getAccounts</span>(Integer limitSize, Integer offset) {
+    <span class="kw">return</span> [SELECT Id, Name, Industry FROM Account
+            ORDER BY CreatedDate LIMIT :limitSize OFFSET :offset];
+}`
+      }
+    ]
   }
 };
 
@@ -1474,6 +3123,7 @@ function updateCounts() {
   document.getElementById('cnt-basic').textContent = (d.basic || []).length;
   document.getElementById('cnt-intermediate').textContent = (d.intermediate || []).length;
   document.getElementById('cnt-advanced').textContent = (d.advanced || []).length;
+  document.getElementById('cnt-scenario').textContent = (d.scenario || []).length;  // ← ADD THIS
 }
 
 function codeWrap(code) {
